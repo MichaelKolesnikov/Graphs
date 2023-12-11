@@ -59,13 +59,15 @@ namespace Graphs {
 	template <class T>
 	struct VertexHash {
 		std::size_t operator()(const Vertex<T>& vertex) const {
-			return std::hash<T>()(vertex.get_code());
+			return std::hash<uint64_t>()(vertex.get_code());
 		}
 	};
 	template <class T>
 	using SetOfVertices = set<Vertex<T>>;
 	template <class T>
 	using VectorOfVertices = vector<Vertex<T>>;
+	template <class T>
+	using DictOfVertices = unordered_map<T, Vertex<T>>;
 
 	template <class T>
 	class Edge {
@@ -134,7 +136,7 @@ namespace Graphs {
 	template <class T>
 	struct EdgeHash {
 		std::size_t operator()(const Edge<T>& edge) const {
-			return std::hash<T>()(edge.get_id());
+			return std::hash<uint64_t>()(edge.get_id());
 		}
 	};
 	template <class T>

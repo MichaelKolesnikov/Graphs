@@ -12,37 +12,37 @@ using namespace System::Drawing;
 using namespace msclr::interop;
 
 namespace Visualization {
+	using namespace std;
 	bool directed = false;
 	bool with_multiple_edges = false;
 	bool weighted = false;
 
-	// std::unordered_map<std::string, Graphs::Vertex<int>>
-	Graphs::VectorOfVertices<int> vertices_000;
-	Graphs::UndirectedGraph<int> graph_000(false, false);
+	Graphs::DictOfVertices<string> vertices_000;
+	Graphs::UndirectedGraph<string> graph_000(false, false);
 
-	Graphs::VectorOfVertices<int> vertices_001;
-	Graphs::UndirectedGraph<int> graph_001(false, true);
+	Graphs::DictOfVertices<string> vertices_001;
+	Graphs::UndirectedGraph<string> graph_001(false, true);
 
-	Graphs::VectorOfVertices<int> vertices_010;
-	Graphs::UndirectedGraph<int> graph_010(true, false);
+	Graphs::DictOfVertices<string> vertices_010;
+	Graphs::UndirectedGraph<string> graph_010(true, false);
 
-	Graphs::VectorOfVertices<int> vertices_011;
-	Graphs::UndirectedGraph<int> graph_011(true, true);
+	Graphs::DictOfVertices<string> vertices_011;
+	Graphs::UndirectedGraph<string> graph_011(true, true);
 
-	Graphs::VectorOfVertices<int> vertices_100;
-	Graphs::DirectedGraph<int> graph_100(false, false);
+	Graphs::DictOfVertices<string> vertices_100;
+	Graphs::DirectedGraph<string> graph_100(false, false);
 
-	Graphs::VectorOfVertices<int> vertices_101;
-	Graphs::DirectedGraph<int> graph_101(false, true);
+	Graphs::DictOfVertices<string> vertices_101;
+	Graphs::DirectedGraph<string> graph_101(false, true);
 
-	Graphs::VectorOfVertices<int> vertices_110;
-	Graphs::DirectedGraph<int> graph_110(true, false);
+	Graphs::DictOfVertices<string> vertices_110;
+	Graphs::DirectedGraph<string> graph_110(true, false);
 
-	Graphs::VectorOfVertices<int> vertices_111;
-	Graphs::DirectedGraph<int> graph_111(true, true);
+	Graphs::DictOfVertices<string> vertices_111;
+	Graphs::DirectedGraph<string> graph_111(true, true);
 
-	Graphs::IGraph<int>* get_current_graph() {
-		Graphs::IGraph<int>* graph = nullptr;
+	Graphs::IGraph<string>* get_current_graph() {
+		Graphs::IGraph<string>* graph = nullptr;
 		if (directed == false) {
 			if (with_multiple_edges == false) {
 				if (weighted == false) {
@@ -81,8 +81,8 @@ namespace Visualization {
 		}
 		return graph;
 	}
-	Graphs::VectorOfVertices<int>* get_current_vertices() {
-		Graphs::VectorOfVertices<int>* vertices = nullptr;
+	Graphs::DictOfVertices<string>* get_current_vertices() {
+		Graphs::DictOfVertices<string>* vertices = nullptr;
 		if (directed == false) {
 			if (with_multiple_edges == false) {
 				if (weighted == false) {
@@ -121,16 +121,14 @@ namespace Visualization {
 		}
 		return vertices;
 	}
-	
+
 
 	/// <summary>
 	/// Сводка для TestForm
 	/// </summary>
-	public ref class TestForm : public System::Windows::Forms::Form
-	{
+	public ref class TestForm : public System::Windows::Forms::Form {
 	public:
-		TestForm(void)
-		{
+		TestForm(void) {
 			std::string filename = "output_graph.dot";
 			std::string output_image = "site\\output_image.png";
 
@@ -144,10 +142,8 @@ namespace Visualization {
 		/// <summary>
 		/// Освободить все используемые ресурсы.
 		/// </summary>
-		~TestForm()
-		{
-			if (components)
-			{
+		~TestForm() {
+			if (components) {
 				delete components;
 			}
 		}
@@ -189,7 +185,7 @@ namespace Visualization {
 		/// <summary>
 		/// Обязательная переменная конструктора.
 		/// </summary>
-		System::ComponentModel::Container ^components;
+		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
 		/// <summary>
@@ -554,180 +550,186 @@ namespace Visualization {
 			this->web_browser->Refresh();
 		}
 #pragma endregion
-		private: System::Void add_vertex_Click(System::Object^ sender, System::EventArgs^ e) {
-			auto graph = get_current_graph();
-			auto& vertices = *get_current_vertices();
-			int n = graph->get_count_vertices();
-			vertices.push_back(Graphs::Vertex<int>(n));
-			graph->add_vertex(vertices.back());
-			update_picture_graph();
+	private: System::Void add_vertex_Click(System::Object^ sender, System::EventArgs^ e) {
+		auto& vertices = *get_current_vertices();
+		string s = marshal_as<string>(this->box_vertex1->Text);
+		if (vertices.find(s) != vertices.end()) {
+			return;
 		}
-		private: System::Void add_edge_Click(System::Object^ sender, System::EventArgs^ e) {
-			String^ text1 = this->box_vertex1->Text;
-			String^ text2 = this->box_vertex2->Text;
-			String^ text3 = this->text_box_weight_of_edge->Text;
-			int v1, v2, weight_of_edge = 1;
-			if (!(Int32::TryParse(text1, v1) && Int32::TryParse(text2, v2))) {
+		auto graph = get_current_graph();
+		vertices[s] = Graphs::Vertex<string>(s);
+		graph->add_vertex(vertices[s]);
+		update_picture_graph();
+	}
+	private: System::Void add_edge_Click(System::Object^ sender, System::EventArgs^ e) {
+		String^ text1 = this->box_vertex1->Text;
+		String^ text2 = this->box_vertex2->Text;
+		String^ text3 = this->text_box_weight_of_edge->Text;
+		int weight_of_edge = 1;
+		if (weighted) {
+			if (!Int32::TryParse(text3, weight_of_edge)) {
 				return;
 			}
-			if (weighted) {
-				if (!Int32::TryParse(text3, weight_of_edge)) {
-					return;
-				}
-			}
-			auto graph = get_current_graph();
-			auto& vertices = *get_current_vertices();
-			int n = graph->get_count_vertices();
-			if (v1 < n && v2 < n) {
-				graph->add_edge({ vertices[v1], vertices[v2], weighted, weight_of_edge });
-				update_picture_graph();
-			}
 		}
-		private: System::Void find_cycle_Click(System::Object^ sender, System::EventArgs^ e) {
-			auto graph = get_current_graph();
-			auto& vertices = *get_current_vertices();
-			auto cycle = graph->get_the_cycle();
-			std::unordered_map<Graphs::Edge<int>, std::string, Graphs::EdgeHash<int>> colors;
-			for (auto e : cycle) {
-				colors[e] = "red";
-			}
-			cycle.clear();
-			std::string filename = "output_graph.dot";
-			std::string output_image = "site\\output_image.png";
+		string s1 = marshal_as<string>(text1);
+		string s2 = marshal_as<string>(text2);
+		auto& vertices = *get_current_vertices();
+		if (vertices.find(s1) == vertices.end() || vertices.find(s2) == vertices.end()) {
+			return;
+		}
+		auto graph = get_current_graph();
+		graph->add_edge({ vertices[s1], vertices[s2], weighted, weight_of_edge });
+		update_picture_graph();
+	}
+	private: System::Void find_cycle_Click(System::Object^ sender, System::EventArgs^ e) {
+		auto graph = get_current_graph();
+		auto& vertices = *get_current_vertices();
+		auto cycle = graph->get_the_cycle();
+		std::unordered_map<Graphs::Edge<string>, std::string, Graphs::EdgeHash<string>> colors;
+		for (auto e : cycle) {
+			colors[e] = "red";
+		}
+		cycle.clear();
+		std::string filename = "output_graph.dot";
+		std::string output_image = "site\\output_image.png";
 
-			Graphs::create_dot_file(*graph, filename, "black", &colors);
-			Graphs::create_picture(filename, output_image);
-			this->web_browser->Refresh();
+		Graphs::create_dot_file(*graph, filename, "black", &colors);
+		Graphs::create_picture(filename, output_image);
+		this->web_browser->Refresh();
+	}
+	private: System::Void remove_vertex_Click(System::Object^ sender, System::EventArgs^ e) {
+		auto& vertices = *get_current_vertices();
+		if (vertices.size() == 0) {
+			return;
 		}
-		private: System::Void remove_vertex_Click(System::Object^ sender, System::EventArgs^ e) {
-			auto graph = get_current_graph();
-			auto& vertices = *get_current_vertices();
-			if (vertices.size() == 0) {
-				return;
-			}
-			graph->remove_vertex(vertices.back());
-			vertices.pop_back();
-			update_picture_graph();
+		string s1 = marshal_as<string>(this->box_vertex1->Text);
+		if (vertices.find(s1) == vertices.end()) {
+			return;
 		}
-		private: System::Void remove_edge_Click(System::Object^ sender, System::EventArgs^ e) {
-			String^ text1 = this->box_vertex1->Text;
-			String^ text2 = this->box_vertex2->Text;
-			int v1, v2;
-			if (!(Int32::TryParse(text1, v1) && Int32::TryParse(text2, v2))) {
-				return;
-			}
-			auto graph = get_current_graph();
-			auto& vertices = *get_current_vertices();
-			int n = graph->get_count_vertices();
-			if (v1 < n && v2 < n) {
-				graph->remove_edges_from_to(vertices[v1], vertices[v2]);
-				update_picture_graph();
-			}
+		auto graph = get_current_graph();
+		graph->remove_vertex(vertices[s1]);
+		vertices.erase(s1);
+		update_picture_graph();
+	}
+	private: System::Void remove_edge_Click(System::Object^ sender, System::EventArgs^ e) {
+		string s1 = marshal_as<string>(this->box_vertex1->Text);
+		string s2 = marshal_as<string>(this->box_vertex2->Text);
+		auto& vertices = *get_current_vertices();
+		if (vertices.find(s1) == vertices.end() || vertices.find(s2) == vertices.end()) {
+			return;
 		}
+		auto graph = get_current_graph();
+		int n = graph->get_count_vertices();
+		graph->remove_edges_from_to(vertices.at(s1), vertices.at(s2));
+		update_picture_graph();
+	}
 
-		private: System::Void make_undirected_Click(System::Object^ sender, System::EventArgs^ e) {
-			directed = false;
-			this->is_directed->Text = "No";
-			this->top_sort_button->Visible = false;
-			update_picture_graph();
+	private: System::Void make_undirected_Click(System::Object^ sender, System::EventArgs^ e) {
+		directed = false;
+		this->is_directed->Text = "No";
+		this->top_sort_button->Visible = false;
+		update_picture_graph();
+	}
+	private: System::Void make_directed_Click(System::Object^ sender, System::EventArgs^ e) {
+		directed = true;
+		this->is_directed->Text = "Yes";
+		this->top_sort_button->Visible = true;
+		update_picture_graph();
+	}
+	private: System::Void make_unweighted_Click(System::Object^ sender, System::EventArgs^ e) {
+		weighted = false;
+		this->is_weighted->Text = "No";
+		update_picture_graph();
+	}
+	private: System::Void make_weighted_Click(System::Object^ sender, System::EventArgs^ e) {
+		weighted = true;
+		this->is_weighted->Text = "Yes";
+		update_picture_graph();
+	}
+	private: System::Void make_without_multiple_edges_Click(System::Object^ sender, System::EventArgs^ e) {
+		with_multiple_edges = false;
+		this->is_with_multiple_edges->Text = "No";
+		update_picture_graph();
+	}
+	private: System::Void make_with_multiple_edges_Click(System::Object^ sender, System::EventArgs^ e) {
+		with_multiple_edges = true;
+		this->is_with_multiple_edges->Text = "Yes";
+		update_picture_graph();
+	}
+	private: System::Void top_sort_button_Click(System::Object^ sender, System::EventArgs^ e) {
+		auto graph = get_current_graph();
+		auto dg = dynamic_cast<Graphs::DirectedGraph<string>*>(graph);
+		auto ts = dg->topological_sorting();
+		if (ts.size() == 0) {
+			this->top_sort_result->Text = "Impossible";
+			return;
 		}
-		private: System::Void make_directed_Click(System::Object^ sender, System::EventArgs^ e) {
-			directed = true;
-			this->is_directed->Text = "Yes";
-			this->top_sort_button->Visible = true;
-			update_picture_graph();
+		std::stringstream ss;
+		ss << "{rank=same; ";
+		for (auto v : ts) {
+			ss << v.get_object() << "; ";
 		}
-		private: System::Void make_unweighted_Click(System::Object^ sender, System::EventArgs^ e) {
-			weighted = false;
-			this->is_weighted->Text = "No";
-			update_picture_graph();
-		}
-		private: System::Void make_weighted_Click(System::Object^ sender, System::EventArgs^ e) {
-			weighted = true;
-			this->is_weighted->Text = "Yes";
-			update_picture_graph();
-		}
-		private: System::Void make_without_multiple_edges_Click(System::Object^ sender, System::EventArgs^ e) {
-			with_multiple_edges = false;
-			this->is_with_multiple_edges->Text = "No";
-			update_picture_graph();
-		}
-		private: System::Void make_with_multiple_edges_Click(System::Object^ sender, System::EventArgs^ e) {
-			with_multiple_edges = true;
-			this->is_with_multiple_edges->Text = "Yes";
-			update_picture_graph();
-		}
-		private: System::Void top_sort_button_Click(System::Object^ sender, System::EventArgs^ e) {
-			auto graph = get_current_graph();
-			auto dg = dynamic_cast<Graphs::DirectedGraph<int>*>(graph);
-			auto ts = dg->topological_sorting();
-			if (ts.size() == 0) {
-				this->top_sort_result->Text = "Impossible";
-				return;
-			}
-			std::stringstream ss;
-			ss << "{rank=same; ";
-			for (auto v : ts) {
-				ss << v.get_object() << "; ";
-			}
-			ss << "}";
-			std::string additional_command = ss.str();
-			this->top_sort_result->Text = gcnew String(additional_command.c_str());
-			std::string filename = "output_graph.dot";
-			std::string output_image = "site\\output_image.png";
+		ss << "}";
+		std::string additional_command = ss.str();
+		this->top_sort_result->Text = gcnew String(additional_command.c_str());
+		std::string filename = "output_graph.dot";
+		std::string output_image = "site\\output_image.png";
 
-			// std::shared_ptr < std::unordered_map<Graphs::Edge<int>, std::string, Graphs::EdgeHash<int>>(nullptr);
-			Graphs::create_dot_file(*graph, filename, "black", static_cast<std::unordered_map<Graphs::Edge<int>, std::string, Graphs::EdgeHash<int>>*>(nullptr), additional_command);
-			Graphs::create_picture(filename, output_image);
-			this->web_browser->Refresh();
+		Graphs::create_dot_file(*graph, filename, "black", static_cast<std::unordered_map<Graphs::Edge<string>, std::string, Graphs::EdgeHash<string>>*>(nullptr), additional_command);
+		Graphs::create_picture(filename, output_image);
+		this->web_browser->Refresh();
+	}
+	private: System::Void adjacency_matrix_button_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (weighted || with_multiple_edges) {
+			return;
 		}
-		private: System::Void adjacency_matrix_button_Click(System::Object^ sender, System::EventArgs^ e) {
-			if (weighted || with_multiple_edges) {
-				return;
+		try {
+			std::string inp_text = marshal_as<std::string>(this->adjacency_matrix_box->Text);
+			std::istringstream cin(inp_text);
+			Graphs::IGraph<string>* g;
+			if (directed) {
+				g = new Graphs::DirectedGraph<string>();
 			}
-			try {
-				std::string inp_text = marshal_as<std::string>(this->adjacency_matrix_box->Text);
-				std::istringstream cin(inp_text);
-				Graphs::IGraph<int>* g;
-				if (directed) {
-					g = new Graphs::DirectedGraph<int>();
-				}
-				else {
-					g = new Graphs::UndirectedGraph<int>();
-				}
-				int n;
-				cin >> n;
-				Graphs::VectorOfVertices<int> v;
-				Graphs::create_vertices(v, n);
-				Graphs::put_the_vertices_in_the_graph(*g, v);
-				g->remove_vertex(v[0]);
-				int one;
-				for (int i = 1; i <= n; ++i) {
-					for (int j = 1; j <= n; ++j) {
-						cin >> one;
-						if (one) {
-							g->add_edge_(v[i], v[j]);
-						}
+			else {
+				g = new Graphs::UndirectedGraph<string>();
+			}
+			int n;
+			cin >> n;
+			Graphs::DictOfVertices<string> v;
+			for (int i = 1; i <= n; ++i) {
+				string s = std::to_string(i);
+				v[s] = Graphs::Vertex<string>(s);
+			}
+			Graphs::put_the_vertices_in_the_graph<string>(*g, v);
+			int one;
+			for (int i = 1; i <= n; ++i) {
+				for (int j = 1; j <= n; ++j) {
+					cin >> one;
+					string s1 = std::to_string(i);
+					string s2 = std::to_string(j);
+					if (one) {
+						g->add_edge_(v[s1], v[s2]);
 					}
 				}
-				auto g_ = get_current_graph();
-				auto& v_ = *get_current_vertices();
-				if (directed) {
-					auto casted_g = dynamic_cast<Graphs::DirectedGraph<int>*>(g);
-					auto casted_g_ = dynamic_cast<Graphs::DirectedGraph<int>*>(g_);
-					*casted_g_ = *casted_g;
-				}
-				else {
-					auto casted_g = dynamic_cast<Graphs::UndirectedGraph<int>*>(g);
-					auto casted_g_ = dynamic_cast<Graphs::UndirectedGraph<int>*>(g_);
-					*casted_g_ = *casted_g;
-				}
-				
-				update_picture_graph();
 			}
-			catch (...) {
+			auto g_ = get_current_graph();
+			auto& v_ = *get_current_vertices();
+			if (directed) {
+				auto casted_g = dynamic_cast<Graphs::DirectedGraph<string>*>(g);
+				auto casted_g_ = dynamic_cast<Graphs::DirectedGraph<string>*>(g_);
+				*casted_g_ = *casted_g;
+			}
+			else {
+				auto casted_g = dynamic_cast<Graphs::UndirectedGraph<string>*>(g);
+				auto casted_g_ = dynamic_cast<Graphs::UndirectedGraph<string>*>(g_);
+				*casted_g_ = *casted_g;
+			}
 
-			}
+			update_picture_graph();
 		}
+		catch (...) {
+
+		}
+	}
 	};
 }

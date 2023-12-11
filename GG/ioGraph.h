@@ -17,7 +17,7 @@ namespace Graphs {
 		return v;
 	}
 	template <class T>
-	void put_the_vertices_in_the_graph(IGraph<T>& g, unordered_map<int, Vertex<T>>& vertices) {
+	void put_the_vertices_in_the_graph(IGraph<T>& g, DictOfVertices<T>& vertices) {
 		for (auto& p : vertices) {
 			g.add_vertex(p.second);
 		}
