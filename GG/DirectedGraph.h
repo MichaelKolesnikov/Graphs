@@ -18,7 +18,6 @@ namespace Graphs {
 					}
 				}
 				else if (this->vertex_used[u] == 1) {
-					this->cycle_end = v;
 					this->cycle_st = u;
 					return true;
 				}

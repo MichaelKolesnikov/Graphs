@@ -1,5 +1,7 @@
 #pragma once
 #include "..\\GG\\Graphs.h"
+#include <sstream>
+#include <msclr/marshal_cppstd.h>
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -7,12 +9,14 @@ using namespace System::Collections;
 using namespace System::Windows::Forms;
 using namespace System::Data;
 using namespace System::Drawing;
+using namespace msclr::interop;
 
 namespace Visualization {
 	bool directed = false;
 	bool with_multiple_edges = false;
 	bool weighted = false;
 
+	// std::unordered_map<std::string, Graphs::Vertex<int>>
 	Graphs::VectorOfVertices<int> vertices_000;
 	Graphs::UndirectedGraph<int> graph_000(false, false);
 
@@ -170,9 +174,15 @@ namespace Visualization {
 	private: System::Windows::Forms::Label^ is_weighted;
 	private: System::Windows::Forms::TextBox^ text_box_weight_of_edge;
 	private: System::Windows::Forms::Label^ current_graph_label;
+	private: System::Windows::Forms::Button^ top_sort_button;
+	private: System::Windows::Forms::TextBox^ top_sort_result;
+	private: System::Windows::Forms::RichTextBox^ adjacency_matrix_box;
 
-
-
+	private: System::Windows::Forms::RichTextBox^ list_edges_box;
+	private: System::Windows::Forms::Label^ adjacency_matrix_label;
+	private: System::Windows::Forms::Label^ list_edges_label;
+	private: System::Windows::Forms::Button^ adjacency_matrix_button;
+	private: System::Windows::Forms::Button^ list_edges_button;
 
 
 	private:
@@ -209,6 +219,14 @@ namespace Visualization {
 			this->is_weighted = (gcnew System::Windows::Forms::Label());
 			this->text_box_weight_of_edge = (gcnew System::Windows::Forms::TextBox());
 			this->current_graph_label = (gcnew System::Windows::Forms::Label());
+			this->top_sort_button = (gcnew System::Windows::Forms::Button());
+			this->top_sort_result = (gcnew System::Windows::Forms::TextBox());
+			this->adjacency_matrix_box = (gcnew System::Windows::Forms::RichTextBox());
+			this->list_edges_box = (gcnew System::Windows::Forms::RichTextBox());
+			this->adjacency_matrix_label = (gcnew System::Windows::Forms::Label());
+			this->list_edges_label = (gcnew System::Windows::Forms::Label());
+			this->adjacency_matrix_button = (gcnew System::Windows::Forms::Button());
+			this->list_edges_button = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// add_vertex
@@ -415,11 +433,88 @@ namespace Visualization {
 			this->current_graph_label->TabIndex = 28;
 			this->current_graph_label->Text = L"Current graph";
 			// 
+			// top_sort_button
+			// 
+			this->top_sort_button->Location = System::Drawing::Point(977, 349);
+			this->top_sort_button->Name = L"top_sort_button";
+			this->top_sort_button->Size = System::Drawing::Size(135, 38);
+			this->top_sort_button->TabIndex = 29;
+			this->top_sort_button->Text = L"top. sort";
+			this->top_sort_button->UseVisualStyleBackColor = true;
+			this->top_sort_button->Visible = false;
+			this->top_sort_button->Click += gcnew System::EventHandler(this, &TestForm::top_sort_button_Click);
+			// 
+			// top_sort_result
+			// 
+			this->top_sort_result->Location = System::Drawing::Point(1119, 349);
+			this->top_sort_result->Name = L"top_sort_result";
+			this->top_sort_result->Size = System::Drawing::Size(151, 22);
+			this->top_sort_result->TabIndex = 30;
+			// 
+			// adjacency_matrix_box
+			// 
+			this->adjacency_matrix_box->Location = System::Drawing::Point(1296, 370);
+			this->adjacency_matrix_box->Name = L"adjacency_matrix_box";
+			this->adjacency_matrix_box->Size = System::Drawing::Size(186, 171);
+			this->adjacency_matrix_box->TabIndex = 31;
+			this->adjacency_matrix_box->Text = L"";
+			// 
+			// list_edges_box
+			// 
+			this->list_edges_box->Location = System::Drawing::Point(1497, 266);
+			this->list_edges_box->Name = L"list_edges_box";
+			this->list_edges_box->Size = System::Drawing::Size(173, 275);
+			this->list_edges_box->TabIndex = 32;
+			this->list_edges_box->Text = L"";
+			// 
+			// adjacency_matrix_label
+			// 
+			this->adjacency_matrix_label->AutoSize = true;
+			this->adjacency_matrix_label->Location = System::Drawing::Point(1316, 349);
+			this->adjacency_matrix_label->Name = L"adjacency_matrix_label";
+			this->adjacency_matrix_label->Size = System::Drawing::Size(0, 16);
+			this->adjacency_matrix_label->TabIndex = 33;
+			// 
+			// list_edges_label
+			// 
+			this->list_edges_label->AutoSize = true;
+			this->list_edges_label->Location = System::Drawing::Point(1516, 247);
+			this->list_edges_label->Name = L"list_edges_label";
+			this->list_edges_label->Size = System::Drawing::Size(0, 16);
+			this->list_edges_label->TabIndex = 34;
+			// 
+			// adjacency_matrix_button
+			// 
+			this->adjacency_matrix_button->Location = System::Drawing::Point(1309, 323);
+			this->adjacency_matrix_button->Name = L"adjacency_matrix_button";
+			this->adjacency_matrix_button->Size = System::Drawing::Size(153, 41);
+			this->adjacency_matrix_button->TabIndex = 35;
+			this->adjacency_matrix_button->Text = L"Input adjacency matrix";
+			this->adjacency_matrix_button->UseVisualStyleBackColor = true;
+			this->adjacency_matrix_button->Click += gcnew System::EventHandler(this, &TestForm::adjacency_matrix_button_Click);
+			// 
+			// list_edges_button
+			// 
+			this->list_edges_button->Location = System::Drawing::Point(1514, 224);
+			this->list_edges_button->Name = L"list_edges_button";
+			this->list_edges_button->Size = System::Drawing::Size(156, 36);
+			this->list_edges_button->TabIndex = 36;
+			this->list_edges_button->Text = L"Entering a list of edges";
+			this->list_edges_button->UseVisualStyleBackColor = true;
+			// 
 			// TestForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(1282, 553);
+			this->ClientSize = System::Drawing::Size(1682, 553);
+			this->Controls->Add(this->list_edges_button);
+			this->Controls->Add(this->adjacency_matrix_button);
+			this->Controls->Add(this->list_edges_label);
+			this->Controls->Add(this->adjacency_matrix_label);
+			this->Controls->Add(this->list_edges_box);
+			this->Controls->Add(this->adjacency_matrix_box);
+			this->Controls->Add(this->top_sort_result);
+			this->Controls->Add(this->top_sort_button);
 			this->Controls->Add(this->current_graph_label);
 			this->Controls->Add(this->text_box_weight_of_edge);
 			this->Controls->Add(this->is_weighted);
@@ -492,12 +587,15 @@ namespace Visualization {
 			auto graph = get_current_graph();
 			auto& vertices = *get_current_vertices();
 			auto cycle = graph->get_the_cycle();
-			auto set_cycle = Graphs::Edges<int>(begin(cycle), end(cycle));
+			std::unordered_map<Graphs::Edge<int>, std::string, Graphs::EdgeHash<int>> colors;
+			for (auto e : cycle) {
+				colors[e] = "red";
+			}
 			cycle.clear();
 			std::string filename = "output_graph.dot";
 			std::string output_image = "site\\output_image.png";
 
-			Graphs::create_dot_file(*graph, filename, &set_cycle);
+			Graphs::create_dot_file(*graph, filename, "black", &colors);
 			Graphs::create_picture(filename, output_image);
 			this->web_browser->Refresh();
 		}
@@ -530,11 +628,13 @@ namespace Visualization {
 		private: System::Void make_undirected_Click(System::Object^ sender, System::EventArgs^ e) {
 			directed = false;
 			this->is_directed->Text = "No";
+			this->top_sort_button->Visible = false;
 			update_picture_graph();
 		}
 		private: System::Void make_directed_Click(System::Object^ sender, System::EventArgs^ e) {
 			directed = true;
 			this->is_directed->Text = "Yes";
+			this->top_sort_button->Visible = true;
 			update_picture_graph();
 		}
 		private: System::Void make_unweighted_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -556,6 +656,78 @@ namespace Visualization {
 			with_multiple_edges = true;
 			this->is_with_multiple_edges->Text = "Yes";
 			update_picture_graph();
+		}
+		private: System::Void top_sort_button_Click(System::Object^ sender, System::EventArgs^ e) {
+			auto graph = get_current_graph();
+			auto dg = dynamic_cast<Graphs::DirectedGraph<int>*>(graph);
+			auto ts = dg->topological_sorting();
+			if (ts.size() == 0) {
+				this->top_sort_result->Text = "Impossible";
+				return;
+			}
+			std::stringstream ss;
+			ss << "{rank=same; ";
+			for (auto v : ts) {
+				ss << v.get_object() << "; ";
+			}
+			ss << "}";
+			std::string additional_command = ss.str();
+			this->top_sort_result->Text = gcnew String(additional_command.c_str());
+			std::string filename = "output_graph.dot";
+			std::string output_image = "site\\output_image.png";
+
+			// std::shared_ptr < std::unordered_map<Graphs::Edge<int>, std::string, Graphs::EdgeHash<int>>(nullptr);
+			Graphs::create_dot_file(*graph, filename, "black", static_cast<std::unordered_map<Graphs::Edge<int>, std::string, Graphs::EdgeHash<int>>*>(nullptr), additional_command);
+			Graphs::create_picture(filename, output_image);
+			this->web_browser->Refresh();
+		}
+		private: System::Void adjacency_matrix_button_Click(System::Object^ sender, System::EventArgs^ e) {
+			if (weighted || with_multiple_edges) {
+				return;
+			}
+			try {
+				std::string inp_text = marshal_as<std::string>(this->adjacency_matrix_box->Text);
+				std::istringstream cin(inp_text);
+				Graphs::IGraph<int>* g;
+				if (directed) {
+					g = new Graphs::DirectedGraph<int>();
+				}
+				else {
+					g = new Graphs::UndirectedGraph<int>();
+				}
+				int n;
+				cin >> n;
+				Graphs::VectorOfVertices<int> v;
+				Graphs::create_vertices(v, n);
+				Graphs::put_the_vertices_in_the_graph(*g, v);
+				g->remove_vertex(v[0]);
+				int one;
+				for (int i = 1; i <= n; ++i) {
+					for (int j = 1; j <= n; ++j) {
+						cin >> one;
+						if (one) {
+							g->add_edge_(v[i], v[j]);
+						}
+					}
+				}
+				auto g_ = get_current_graph();
+				auto& v_ = *get_current_vertices();
+				if (directed) {
+					auto casted_g = dynamic_cast<Graphs::DirectedGraph<int>*>(g);
+					auto casted_g_ = dynamic_cast<Graphs::DirectedGraph<int>*>(g_);
+					*casted_g_ = *casted_g;
+				}
+				else {
+					auto casted_g = dynamic_cast<Graphs::UndirectedGraph<int>*>(g);
+					auto casted_g_ = dynamic_cast<Graphs::UndirectedGraph<int>*>(g_);
+					*casted_g_ = *casted_g;
+				}
+				
+				update_picture_graph();
+			}
+			catch (...) {
+
+			}
 		}
 	};
 }

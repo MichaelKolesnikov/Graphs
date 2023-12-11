@@ -156,7 +156,7 @@ namespace Graphs {
 	}
 
 	template<class T>
-	void create_dot_file(Graphs::IGraph<T>& graph, const std::string& filename, Graphs::Edges<T>* edges = nullptr) {
+	void create_dot_file(Graphs::IGraph<T>& graph, const std::string& filename, const string& default_color = "black", unordered_map<Edge<T>, string, EdgeHash<T>>* color = nullptr, string final_command = "") {
 		std::ofstream dotFile(filename);
 		string edge_s = " -- ";
 		if (graph.is_directed()) {
@@ -176,13 +176,11 @@ namespace Graphs {
 			if (graph.is_weighted()) {
 				dotFile << "label=" << edge.get_weight();
 			}
-			if (edges != nullptr) {
-				dotFile << "color=" << (edges->find(edge) != edges->end() ? "red" : "black");
-			}
-			dotFile << "]" << endl;
+			dotFile << "color=" << (color != nullptr && color->find(edge) != color->end() ? color->at(edge) : default_color);
+			dotFile << "]" << std::endl;
 			dotFile << ";" << std::endl;
 		}
-
+		dotFile << final_command << std::endl;
 		dotFile << "}" << std::endl;
 		dotFile.close();
 	}
