@@ -24,7 +24,6 @@ namespace Graphs {
 					}
 					else {
 						this->cycle_st = u;
-						this->cycle_end = v;
 						return true;
 					}
 				}

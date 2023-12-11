@@ -17,7 +17,7 @@ namespace Graphs {
 		
 		EdgeOfOrigin<T> origin;
 		Distances<T> distances;
-		Vertex<T> cycle_st, cycle_end;
+		Vertex<T> cycle_st;
 
 		void simple_dfs(const Vertex<T>& start_vertex) {
 			stack<Vertex<T>> stack;
@@ -92,7 +92,7 @@ namespace Graphs {
 			VectorOfEdges<T> path;
 			Vertex<T> cur_v = cycle_st;
 			do {
-				Edge<T> e = origin[cur_v];
+				Edge<T> e = origin.at(cur_v);
 				path.push_back(e);
 				cur_v = e.get_neighbor(cur_v);
 			}

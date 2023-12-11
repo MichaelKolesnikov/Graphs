@@ -38,19 +38,17 @@ namespace Graphs {
 
 		bool dfs_cycle(Vertex<T>& v) {
 			this->vertex_used[v] = 1;
-			for (Edge<T> e : this->get_incident_edges(v)) {
-				for (auto u : this->get_neighbors(v)) {
-					if (this->vertex_used[u] == 0) {
-						this->origin[u] = e;
-						if (dfs_cycle_ts(u)) {
-							return true;
-						}
-					}
-					else if (this->vertex_used[u] == 1) {
-						this->cycle_end = v;
-						this->cycle_st = u;
+			for (Edge<T> e : this->ug[v]) {
+				auto u = e.get_neighbor(v);
+				this->origin[u] = e;
+				if (this->vertex_used[u] == 0) {
+					if (dfs_cycle(u)) {
 						return true;
 					}
+				}
+				else if (this->vertex_used[u] == 1) {
+					this->cycle_st = u;
+					return true;
 				}
 			}
 
@@ -137,9 +135,10 @@ namespace Graphs {
 			this->origin.clear();
 
 			bool cycle_is_found = false;
-			for (auto i : this->get_vertices()) {
+			for (auto pair_ : this->ug) {
+				auto i = pair_.first;
 				if (!this->vertex_used[i]) {
-					cycle_is_found = dfs_cycle_ts(i);
+					cycle_is_found = dfs_cycle(i);
 					if (cycle_is_found) {
 						break;
 					}
