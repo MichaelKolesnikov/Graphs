@@ -60,7 +60,7 @@ namespace Graphs {
 		int remove_edges_from_to(const Vertex<T>& vertex1, const Vertex<T>& vertex2) {
 			int count = 0;
 			for (Edge<T> e : this->get_incident_edges(vertex1)) {
-				if (e.is_incidental(vertex2)) {
+				if (e.is_negatively_incidental(vertex2)) {
 					count += this->remove_edge(e);
 				}
 			}

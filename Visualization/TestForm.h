@@ -9,9 +9,9 @@ using namespace System::Data;
 using namespace System::Drawing;
 
 namespace Visualization {
-	Boolean directed = false;
-	Boolean with_multiple_edges = false;
-	Boolean weighted = false;
+	bool directed = false;
+	bool with_multiple_edges = false;
+	bool weighted = false;
 
 	Graphs::VectorOfVertices<int> vertices_000;
 	Graphs::UndirectedGraph<int> graph_000(false, false);
@@ -165,6 +165,15 @@ namespace Visualization {
 	private: System::Windows::Forms::Button^ make_with_multiple_edges;
 	private: System::Windows::Forms::Button^ make_without_multiple_edges;
 	private: System::Windows::Forms::Label^ multiple_label;
+	private: System::Windows::Forms::Label^ is_directed;
+	private: System::Windows::Forms::Label^ is_with_multiple_edges;
+	private: System::Windows::Forms::Label^ is_weighted;
+	private: System::Windows::Forms::TextBox^ text_box_weight_of_edge;
+	private: System::Windows::Forms::Label^ current_graph_label;
+
+
+
+
 
 	private:
 		/// <summary>
@@ -195,6 +204,11 @@ namespace Visualization {
 			this->make_with_multiple_edges = (gcnew System::Windows::Forms::Button());
 			this->make_without_multiple_edges = (gcnew System::Windows::Forms::Button());
 			this->multiple_label = (gcnew System::Windows::Forms::Label());
+			this->is_directed = (gcnew System::Windows::Forms::Label());
+			this->is_with_multiple_edges = (gcnew System::Windows::Forms::Label());
+			this->is_weighted = (gcnew System::Windows::Forms::Label());
+			this->text_box_weight_of_edge = (gcnew System::Windows::Forms::TextBox());
+			this->current_graph_label = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// add_vertex
@@ -358,11 +372,59 @@ namespace Visualization {
 			this->multiple_label->TabIndex = 21;
 			this->multiple_label->Text = L"With multiple edges\?";
 			// 
+			// is_directed
+			// 
+			this->is_directed->AutoSize = true;
+			this->is_directed->Location = System::Drawing::Point(1195, 416);
+			this->is_directed->Name = L"is_directed";
+			this->is_directed->Size = System::Drawing::Size(25, 16);
+			this->is_directed->TabIndex = 24;
+			this->is_directed->Text = L"No";
+			// 
+			// is_with_multiple_edges
+			// 
+			this->is_with_multiple_edges->AutoSize = true;
+			this->is_with_multiple_edges->Location = System::Drawing::Point(1195, 468);
+			this->is_with_multiple_edges->Name = L"is_with_multiple_edges";
+			this->is_with_multiple_edges->Size = System::Drawing::Size(25, 16);
+			this->is_with_multiple_edges->TabIndex = 25;
+			this->is_with_multiple_edges->Text = L"No";
+			// 
+			// is_weighted
+			// 
+			this->is_weighted->AutoSize = true;
+			this->is_weighted->Location = System::Drawing::Point(1195, 520);
+			this->is_weighted->Name = L"is_weighted";
+			this->is_weighted->Size = System::Drawing::Size(25, 16);
+			this->is_weighted->TabIndex = 26;
+			this->is_weighted->Text = L"No";
+			// 
+			// text_box_weight_of_edge
+			// 
+			this->text_box_weight_of_edge->Location = System::Drawing::Point(1011, 114);
+			this->text_box_weight_of_edge->Name = L"text_box_weight_of_edge";
+			this->text_box_weight_of_edge->Size = System::Drawing::Size(100, 22);
+			this->text_box_weight_of_edge->TabIndex = 27;
+			// 
+			// current_graph_label
+			// 
+			this->current_graph_label->AutoSize = true;
+			this->current_graph_label->Location = System::Drawing::Point(1162, 390);
+			this->current_graph_label->Name = L"current_graph_label";
+			this->current_graph_label->Size = System::Drawing::Size(87, 16);
+			this->current_graph_label->TabIndex = 28;
+			this->current_graph_label->Text = L"Current graph";
+			// 
 			// TestForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1282, 553);
+			this->Controls->Add(this->current_graph_label);
+			this->Controls->Add(this->text_box_weight_of_edge);
+			this->Controls->Add(this->is_weighted);
+			this->Controls->Add(this->is_with_multiple_edges);
+			this->Controls->Add(this->is_directed);
 			this->Controls->Add(this->make_with_multiple_edges);
 			this->Controls->Add(this->make_without_multiple_edges);
 			this->Controls->Add(this->multiple_label);
@@ -384,6 +446,7 @@ namespace Visualization {
 			this->Text = L"Graph";
 			this->ResumeLayout(false);
 			this->PerformLayout();
+
 		}
 
 		void update_picture_graph() {
@@ -407,15 +470,21 @@ namespace Visualization {
 		private: System::Void add_edge_Click(System::Object^ sender, System::EventArgs^ e) {
 			String^ text1 = this->box_vertex1->Text;
 			String^ text2 = this->box_vertex2->Text;
-			int v1, v2;
+			String^ text3 = this->text_box_weight_of_edge->Text;
+			int v1, v2, weight_of_edge = 1;
 			if (!(Int32::TryParse(text1, v1) && Int32::TryParse(text2, v2))) {
 				return;
+			}
+			if (weighted) {
+				if (!Int32::TryParse(text3, weight_of_edge)) {
+					return;
+				}
 			}
 			auto graph = get_current_graph();
 			auto& vertices = *get_current_vertices();
 			int n = graph->get_count_vertices();
 			if (v1 < n && v2 < n) {
-				graph->add_edge({ vertices[v1], vertices[v2] });
+				graph->add_edge({ vertices[v1], vertices[v2], weighted, weight_of_edge });
 				update_picture_graph();
 			}
 		}
@@ -460,26 +529,32 @@ namespace Visualization {
 
 		private: System::Void make_undirected_Click(System::Object^ sender, System::EventArgs^ e) {
 			directed = false;
+			this->is_directed->Text = "No";
 			update_picture_graph();
 		}
 		private: System::Void make_directed_Click(System::Object^ sender, System::EventArgs^ e) {
 			directed = true;
+			this->is_directed->Text = "Yes";
 			update_picture_graph();
 		}
 		private: System::Void make_unweighted_Click(System::Object^ sender, System::EventArgs^ e) {
 			weighted = false;
+			this->is_weighted->Text = "No";
 			update_picture_graph();
 		}
 		private: System::Void make_weighted_Click(System::Object^ sender, System::EventArgs^ e) {
 			weighted = true;
+			this->is_weighted->Text = "Yes";
 			update_picture_graph();
 		}
 		private: System::Void make_without_multiple_edges_Click(System::Object^ sender, System::EventArgs^ e) {
 			with_multiple_edges = false;
+			this->is_with_multiple_edges->Text = "No";
 			update_picture_graph();
 		}
 		private: System::Void make_with_multiple_edges_Click(System::Object^ sender, System::EventArgs^ e) {
 			with_multiple_edges = true;
+			this->is_with_multiple_edges->Text = "Yes";
 			update_picture_graph();
 		}
 	};

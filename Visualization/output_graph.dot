@@ -3,8 +3,4 @@ digraph G {
 1;
 2;
 3;
-1 -> 2 [label=1color=black]
-;
-2 -> 2 [label=2color=red]
-;
 }
