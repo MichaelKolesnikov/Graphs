@@ -1,5 +1,4 @@
-#include "MyForm.h"
-
+#include "TestForm.h"
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -8,6 +7,6 @@ using namespace System::Windows::Forms;
 int main(array<String^>^ args) {
 	Application::SetCompatibleTextRenderingDefault(false);
 	Application::EnableVisualStyles();
-	Visualization::MyForm form;
+	Visualization::TestForm form;
 	Application::Run(% form);
 }

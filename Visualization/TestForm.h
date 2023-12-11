@@ -1,6 +1,5 @@
 #pragma once
 #include "..\\GG\\Graphs.h"
-#include <string>
 
 using namespace System;
 using namespace System::ComponentModel;
@@ -8,7 +7,6 @@ using namespace System::Collections;
 using namespace System::Windows::Forms;
 using namespace System::Data;
 using namespace System::Drawing;
-using namespace System::Diagnostics;
 
 namespace Visualization {
 	Boolean directed = false;
@@ -39,13 +37,96 @@ namespace Visualization {
 	Graphs::VectorOfVertices<int> vertices_111;
 	Graphs::DirectedGraph<int> graph_111(true, true);
 
+	Graphs::IGraph<int>* get_current_graph() {
+		Graphs::IGraph<int>* graph = nullptr;
+		if (directed == false) {
+			if (with_multiple_edges == false) {
+				if (weighted == false) {
+					graph = &graph_000;
+				}
+				else {
+					graph = &graph_001;
+				}
+			}
+			else {
+				if (weighted == false) {
+					graph = &graph_010;
+				}
+				else {
+					graph = &graph_011;
+				}
+			}
+		}
+		else {
+			if (with_multiple_edges == false) {
+				if (weighted == false) {
+					graph = &graph_100;
+				}
+				else {
+					graph = &graph_101;
+				}
+			}
+			else {
+				if (weighted == false) {
+					graph = &graph_110;
+				}
+				else {
+					graph = &graph_111;
+				}
+			}
+		}
+		return graph;
+	}
+	Graphs::VectorOfVertices<int>* get_current_vertices() {
+		Graphs::VectorOfVertices<int>* vertices = nullptr;
+		if (directed == false) {
+			if (with_multiple_edges == false) {
+				if (weighted == false) {
+					vertices = &vertices_000;
+				}
+				else {
+					vertices = &vertices_001;
+				}
+			}
+			else {
+				if (weighted == false) {
+					vertices = &vertices_010;
+				}
+				else {
+					vertices = &vertices_011;
+				}
+			}
+		}
+		else {
+			if (with_multiple_edges == false) {
+				if (weighted == false) {
+					vertices = &vertices_100;
+				}
+				else {
+					vertices = &vertices_101;
+				}
+			}
+			else {
+				if (weighted == false) {
+					vertices = &vertices_110;
+				}
+				else {
+					vertices = &vertices_111;
+				}
+			}
+		}
+		return vertices;
+	}
+	
 
 	/// <summary>
-	/// Сводка для MyForm
+	/// Сводка для TestForm
 	/// </summary>
-	public ref class MyForm : public System::Windows::Forms::Form {
+	public ref class TestForm : public System::Windows::Forms::Form
+	{
 	public:
-		MyForm() {
+		TestForm(void)
+		{
 			std::string filename = "output_graph.dot";
 			std::string output_image = "site\\output_image.png";
 
@@ -59,8 +140,10 @@ namespace Visualization {
 		/// <summary>
 		/// Освободить все используемые ресурсы.
 		/// </summary>
-		~MyForm() {
-			if (components) {
+		~TestForm()
+		{
+			if (components)
+			{
 				delete components;
 			}
 		}
@@ -75,21 +158,13 @@ namespace Visualization {
 	private: System::Windows::Forms::Button^ remove_edge;
 	private: System::Windows::Forms::Button^ make_undirected;
 	private: System::Windows::Forms::Button^ make_directed;
-
-
-	private: System::Windows::Forms::Label^ label1;
-	private: System::Windows::Forms::Label^ label2;
+	private: System::Windows::Forms::Label^ directed_label;
+	private: System::Windows::Forms::Label^ weighted_label;
 	private: System::Windows::Forms::Button^ make_weighted;
-
 	private: System::Windows::Forms::Button^ make_unweighted;
 	private: System::Windows::Forms::Button^ make_with_multiple_edges;
-
-
 	private: System::Windows::Forms::Button^ make_without_multiple_edges;
-
-	private: System::Windows::Forms::Label^ label3;
-
-
+	private: System::Windows::Forms::Label^ multiple_label;
 
 	private:
 		/// <summary>
@@ -113,13 +188,13 @@ namespace Visualization {
 			this->remove_edge = (gcnew System::Windows::Forms::Button());
 			this->make_undirected = (gcnew System::Windows::Forms::Button());
 			this->make_directed = (gcnew System::Windows::Forms::Button());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->directed_label = (gcnew System::Windows::Forms::Label());
+			this->weighted_label = (gcnew System::Windows::Forms::Label());
 			this->make_weighted = (gcnew System::Windows::Forms::Button());
 			this->make_unweighted = (gcnew System::Windows::Forms::Button());
 			this->make_with_multiple_edges = (gcnew System::Windows::Forms::Button());
 			this->make_without_multiple_edges = (gcnew System::Windows::Forms::Button());
-			this->label3 = (gcnew System::Windows::Forms::Label());
+			this->multiple_label = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// add_vertex
@@ -130,7 +205,7 @@ namespace Visualization {
 			this->add_vertex->TabIndex = 5;
 			this->add_vertex->Text = L"add_vertex";
 			this->add_vertex->UseVisualStyleBackColor = true;
-			this->add_vertex->Click += gcnew System::EventHandler(this, &MyForm::add_vertex_Click);
+			this->add_vertex->Click += gcnew System::EventHandler(this, &TestForm::add_vertex_Click);
 			// 
 			// add_edge
 			// 
@@ -140,7 +215,7 @@ namespace Visualization {
 			this->add_edge->TabIndex = 6;
 			this->add_edge->Text = L"add_edge";
 			this->add_edge->UseVisualStyleBackColor = true;
-			this->add_edge->Click += gcnew System::EventHandler(this, &MyForm::add_edge_Click);
+			this->add_edge->Click += gcnew System::EventHandler(this, &TestForm::add_edge_Click);
 			// 
 			// box_vertex1
 			// 
@@ -174,7 +249,7 @@ namespace Visualization {
 			this->find_cycle->TabIndex = 10;
 			this->find_cycle->Text = L"find_cycle";
 			this->find_cycle->UseVisualStyleBackColor = true;
-			this->find_cycle->Click += gcnew System::EventHandler(this, &MyForm::find_cycle_Click);
+			this->find_cycle->Click += gcnew System::EventHandler(this, &TestForm::find_cycle_Click);
 			// 
 			// remove_vertex
 			// 
@@ -184,7 +259,7 @@ namespace Visualization {
 			this->remove_vertex->TabIndex = 11;
 			this->remove_vertex->Text = L"remove_vertex";
 			this->remove_vertex->UseVisualStyleBackColor = true;
-			this->remove_vertex->Click += gcnew System::EventHandler(this, &MyForm::remove_vertex_Click);
+			this->remove_vertex->Click += gcnew System::EventHandler(this, &TestForm::remove_vertex_Click);
 			// 
 			// remove_edge
 			// 
@@ -194,7 +269,7 @@ namespace Visualization {
 			this->remove_edge->TabIndex = 12;
 			this->remove_edge->Text = L"remove_edge";
 			this->remove_edge->UseVisualStyleBackColor = true;
-			this->remove_edge->Click += gcnew System::EventHandler(this, &MyForm::remove_edge_Click);
+			this->remove_edge->Click += gcnew System::EventHandler(this, &TestForm::remove_edge_Click);
 			// 
 			// make_undirected
 			// 
@@ -204,7 +279,7 @@ namespace Visualization {
 			this->make_undirected->TabIndex = 13;
 			this->make_undirected->Text = L"No";
 			this->make_undirected->UseVisualStyleBackColor = true;
-			this->make_undirected->Click += gcnew System::EventHandler(this, &MyForm::make_undirected_Click);
+			this->make_undirected->Click += gcnew System::EventHandler(this, &TestForm::make_undirected_Click);
 			// 
 			// make_directed
 			// 
@@ -214,25 +289,25 @@ namespace Visualization {
 			this->make_directed->TabIndex = 14;
 			this->make_directed->Text = L"Yes";
 			this->make_directed->UseVisualStyleBackColor = true;
-			this->make_directed->Click += gcnew System::EventHandler(this, &MyForm::make_directed_Click);
+			this->make_directed->Click += gcnew System::EventHandler(this, &TestForm::make_directed_Click);
 			// 
-			// label1
+			// directed_label
 			// 
-			this->label1->AutoSize = true;
-			this->label1->Location = System::Drawing::Point(974, 390);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(76, 16);
-			this->label1->TabIndex = 17;
-			this->label1->Text = L"Is directed\?";
+			this->directed_label->AutoSize = true;
+			this->directed_label->Location = System::Drawing::Point(974, 390);
+			this->directed_label->Name = L"directed_label";
+			this->directed_label->Size = System::Drawing::Size(76, 16);
+			this->directed_label->TabIndex = 17;
+			this->directed_label->Text = L"Is directed\?";
 			// 
-			// label2
+			// weighted_label
 			// 
-			this->label2->AutoSize = true;
-			this->label2->Location = System::Drawing::Point(974, 494);
-			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(81, 16);
-			this->label2->TabIndex = 18;
-			this->label2->Text = L"Is weighted\?";
+			this->weighted_label->AutoSize = true;
+			this->weighted_label->Location = System::Drawing::Point(974, 494);
+			this->weighted_label->Name = L"weighted_label";
+			this->weighted_label->Size = System::Drawing::Size(81, 16);
+			this->weighted_label->TabIndex = 18;
+			this->weighted_label->Text = L"Is weighted\?";
 			// 
 			// make_weighted
 			// 
@@ -242,7 +317,7 @@ namespace Visualization {
 			this->make_weighted->TabIndex = 20;
 			this->make_weighted->Text = L"Yes";
 			this->make_weighted->UseVisualStyleBackColor = true;
-			this->make_weighted->Click += gcnew System::EventHandler(this, &MyForm::make_weighted_Click);
+			this->make_weighted->Click += gcnew System::EventHandler(this, &TestForm::make_weighted_Click);
 			// 
 			// make_unweighted
 			// 
@@ -252,7 +327,7 @@ namespace Visualization {
 			this->make_unweighted->TabIndex = 19;
 			this->make_unweighted->Text = L"No";
 			this->make_unweighted->UseVisualStyleBackColor = true;
-			this->make_unweighted->Click += gcnew System::EventHandler(this, &MyForm::make_unweighted_Click);
+			this->make_unweighted->Click += gcnew System::EventHandler(this, &TestForm::make_unweighted_Click);
 			// 
 			// make_with_multiple_edges
 			// 
@@ -262,7 +337,7 @@ namespace Visualization {
 			this->make_with_multiple_edges->TabIndex = 23;
 			this->make_with_multiple_edges->Text = L"Yes";
 			this->make_with_multiple_edges->UseVisualStyleBackColor = true;
-			this->make_with_multiple_edges->Click += gcnew System::EventHandler(this, &MyForm::make_with_multiple_edges_Click);
+			this->make_with_multiple_edges->Click += gcnew System::EventHandler(this, &TestForm::make_with_multiple_edges_Click);
 			// 
 			// make_without_multiple_edges
 			// 
@@ -272,29 +347,29 @@ namespace Visualization {
 			this->make_without_multiple_edges->TabIndex = 22;
 			this->make_without_multiple_edges->Text = L"No";
 			this->make_without_multiple_edges->UseVisualStyleBackColor = true;
-			this->make_without_multiple_edges->Click += gcnew System::EventHandler(this, &MyForm::make_without_multiple_edges_Click);
+			this->make_without_multiple_edges->Click += gcnew System::EventHandler(this, &TestForm::make_without_multiple_edges_Click);
 			// 
-			// label3
+			// multiple_label
 			// 
-			this->label3->AutoSize = true;
-			this->label3->Location = System::Drawing::Point(974, 442);
-			this->label3->Name = L"label3";
-			this->label3->Size = System::Drawing::Size(131, 16);
-			this->label3->TabIndex = 21;
-			this->label3->Text = L"With multiple edges\?";
+			this->multiple_label->AutoSize = true;
+			this->multiple_label->Location = System::Drawing::Point(974, 442);
+			this->multiple_label->Name = L"multiple_label";
+			this->multiple_label->Size = System::Drawing::Size(131, 16);
+			this->multiple_label->TabIndex = 21;
+			this->multiple_label->Text = L"With multiple edges\?";
 			// 
-			// MyForm
+			// TestForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1282, 553);
 			this->Controls->Add(this->make_with_multiple_edges);
 			this->Controls->Add(this->make_without_multiple_edges);
-			this->Controls->Add(this->label3);
+			this->Controls->Add(this->multiple_label);
 			this->Controls->Add(this->make_weighted);
 			this->Controls->Add(this->make_unweighted);
-			this->Controls->Add(this->label2);
-			this->Controls->Add(this->label1);
+			this->Controls->Add(this->weighted_label);
+			this->Controls->Add(this->directed_label);
 			this->Controls->Add(this->make_directed);
 			this->Controls->Add(this->make_undirected);
 			this->Controls->Add(this->remove_edge);
@@ -305,11 +380,10 @@ namespace Visualization {
 			this->Controls->Add(this->box_vertex1);
 			this->Controls->Add(this->add_edge);
 			this->Controls->Add(this->add_vertex);
-			this->Name = L"MyForm";
+			this->Name = L"TestForm";
 			this->Text = L"Graph";
 			this->ResumeLayout(false);
 			this->PerformLayout();
-
 		}
 
 		void update_picture_graph() {
@@ -321,90 +395,7 @@ namespace Visualization {
 			Graphs::create_picture(filename, output_image);
 			this->web_browser->Refresh();
 		}
-
-		Graphs::IGraph<int>* get_current_graph() {
-			Graphs::IGraph<int>* graph = nullptr;
-			if (directed == false) {
-				if (with_multiple_edges == false) {
-					if (weighted == false) {
-						graph = &graph_000;
-					}
-					else {
-						graph = &graph_001;
-					}
-				}
-				else {
-					if (weighted == false) {
-						graph = &graph_010;
-					}
-					else {
-						graph = &graph_011;
-					}
-				}
-			}
-			else {
-				if (with_multiple_edges == false) {
-					if (weighted == false) {
-						graph = &graph_100;
-					}
-					else {
-						graph = &graph_101;
-					}
-				}
-				else {
-					if (weighted == false) {
-						graph = &graph_110;
-					}
-					else {
-						graph = &graph_111;
-					}
-				}
-			}
-			return graph;
-		}
-
-		Graphs::VectorOfVertices<int>* get_current_vertices() {
-			Graphs::VectorOfVertices<int>* vertices = nullptr;
-			if (directed == false) {
-				if (with_multiple_edges == false) {
-					if (weighted == false) {
-						vertices = &vertices_000;
-					}
-					else {
-						vertices = &vertices_001;
-					}
-				}
-				else {
-					if (weighted == false) {
-						vertices = &vertices_010;
-					}
-					else {
-						vertices = &vertices_011;
-					}
-				}
-			}
-			else {
-				if (with_multiple_edges == false) {
-					if (weighted == false) {
-						vertices = &vertices_100;
-					}
-					else {
-						vertices = &vertices_101;
-					}
-				}
-				else {
-					if (weighted == false) {
-						vertices = &vertices_110;
-					}
-					else {
-						vertices = &vertices_111;
-					}
-				}
-			}
-			return vertices;
-		}
 #pragma endregion
-
 		private: System::Void add_vertex_Click(System::Object^ sender, System::EventArgs^ e) {
 			auto graph = get_current_graph();
 			auto& vertices = *get_current_vertices();
