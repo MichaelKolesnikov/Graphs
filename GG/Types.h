@@ -158,6 +158,8 @@ namespace Graphs {
 	template <class T>
 	using Colors = unordered_map<Vertex<T>, int, VertexHash<T>>;
 	template <class T>
+	using EdgeColors = unordered_map<Edge<T>, string, EdgeHash<T>>;
+	template <class T>
 	using TypeForCheckUsingVertex = unordered_map<Vertex<T>, int, VertexHash<T>>;
 	template <class T>
 	using TypeForCheckUsingEdge = unordered_map<Edge<T>, bool, EdgeHash<T>>;

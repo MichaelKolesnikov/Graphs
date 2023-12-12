@@ -179,6 +179,7 @@ namespace Visualization {
 	private: System::Windows::Forms::Label^ list_edges_label;
 	private: System::Windows::Forms::Button^ adjacency_matrix_button;
 	private: System::Windows::Forms::Button^ list_edges_button;
+	private: System::Windows::Forms::Button^ min_span_tree_button;
 
 
 	private:
@@ -223,6 +224,7 @@ namespace Visualization {
 			this->list_edges_label = (gcnew System::Windows::Forms::Label());
 			this->adjacency_matrix_button = (gcnew System::Windows::Forms::Button());
 			this->list_edges_button = (gcnew System::Windows::Forms::Button());
+			this->min_span_tree_button = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// add_vertex
@@ -497,12 +499,24 @@ namespace Visualization {
 			this->list_edges_button->TabIndex = 36;
 			this->list_edges_button->Text = L"Entering a list of edges";
 			this->list_edges_button->UseVisualStyleBackColor = true;
+			this->list_edges_button->Click += gcnew System::EventHandler(this, &TestForm::list_edges_button_Click);
+			// 
+			// min_span_tree_button
+			// 
+			this->min_span_tree_button->Location = System::Drawing::Point(1276, 12);
+			this->min_span_tree_button->Name = L"min_span_tree_button";
+			this->min_span_tree_button->Size = System::Drawing::Size(135, 40);
+			this->min_span_tree_button->TabIndex = 37;
+			this->min_span_tree_button->Text = L"min_span_tree";
+			this->min_span_tree_button->UseVisualStyleBackColor = true;
+			this->min_span_tree_button->Click += gcnew System::EventHandler(this, &TestForm::min_span_tree_button_Click);
 			// 
 			// TestForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1682, 553);
+			this->Controls->Add(this->min_span_tree_button);
 			this->Controls->Add(this->list_edges_button);
 			this->Controls->Add(this->adjacency_matrix_button);
 			this->Controls->Add(this->list_edges_label);
@@ -628,12 +642,14 @@ namespace Visualization {
 		directed = false;
 		this->is_directed->Text = "No";
 		this->top_sort_button->Visible = false;
+		this->min_span_tree_button->Visible = true;
 		update_picture_graph();
 	}
 	private: System::Void make_directed_Click(System::Object^ sender, System::EventArgs^ e) {
 		directed = true;
 		this->is_directed->Text = "Yes";
 		this->top_sort_button->Visible = true;
+		this->min_span_tree_button->Visible = false;
 		update_picture_graph();
 	}
 	private: System::Void make_unweighted_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -724,12 +740,86 @@ namespace Visualization {
 				auto casted_g_ = dynamic_cast<Graphs::UndirectedGraph<string>*>(g_);
 				*casted_g_ = *casted_g;
 			}
-
+			v_ = v;
 			update_picture_graph();
 		}
 		catch (...) {
 
 		}
 	}
-	};
+	private: System::Void list_edges_button_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (with_multiple_edges) {
+			return;
+		}
+		try {
+			std::string inp_text = marshal_as<string>(this->list_edges_box->Text);
+			std::istringstream cin(inp_text);
+			Graphs::IGraph<string>* g;
+			if (directed) {
+				g = new Graphs::DirectedGraph<string>(false, weighted);
+			}
+			else {
+				g = new Graphs::UndirectedGraph<string>(false, weighted);
+			}
+			int m, w = 0;
+			cin >> m;
+			Graphs::DictOfVertices<string> v;
+			Graphs::VectorOfEdges<string> edges(m);
+			string s1, s2;
+			for (int i = 0; i < m; ++i) {
+				cin >> s1 >> s2;
+				if (weighted) {
+					cin >> w;
+				}
+				if (v.find(s1) == v.end()) {
+					v[s1] = s1;
+				}
+				if (v.find(s2) == v.end()) {
+					v[s2] = s2;
+				}
+				edges[i] = Graphs::Edge<string>(v[s1], v[s2], true, w);
+			}
+			for (int i = 0; i < m; ++i) {
+				g->add_edge(edges[i]);
+			}
+			auto g_ = get_current_graph();
+			auto& v_ = *get_current_vertices();
+			for (int i = 0; i < m; ++i) {
+				v_[edges[i].vertex1.get_object()] = edges[i].vertex1;
+				v_[edges[i].vertex2.get_object()] = edges[i].vertex2;
+			}
+			if (directed) {
+				auto casted_g = dynamic_cast<Graphs::DirectedGraph<string>*>(g);
+				auto casted_g_ = dynamic_cast<Graphs::DirectedGraph<string>*>(g_);
+				*casted_g_ = *casted_g;
+			}
+			else {
+				auto casted_g = dynamic_cast<Graphs::UndirectedGraph<string>*>(g);
+				auto casted_g_ = dynamic_cast<Graphs::UndirectedGraph<string>*>(g_);
+				*casted_g_ = *casted_g;
+			}			
+			update_picture_graph();
+		}
+		catch (...) {
+
+		}
+	}
+	private: System::Void min_span_tree_button_Click(System::Object^ sender, System::EventArgs^ e) {
+		auto g = get_current_graph();
+		auto& vertices = *get_current_vertices();
+		auto graph = dynamic_cast<Graphs::UndirectedGraph<string>*>(g);
+		auto span = graph->finding_minimum_spanning_tree();
+		auto set_ = span.get_edges();
+		auto colors = Graphs::EdgeColors<string>();
+		for (auto& it : set_) {
+			colors[it] = "green";
+		}
+		std::string filename = "output_graph.dot";
+		std::string output_image = "site\\output_image.png";
+
+		Graphs::create_dot_file(*graph, filename, "black", &colors);
+		Graphs::create_picture(filename, output_image);
+		this->web_browser->Refresh();
+	}
+};
 }
