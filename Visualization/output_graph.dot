@@ -1,77 +1,26 @@
 digraph G {
-subgraph cluster_1 {
-f;
-}
-subgraph cluster_2 {
-e;
-}
-subgraph cluster_3 {
-d;
-}
-subgraph cluster_4 {
-c;
-}
-subgraph cluster_5 {
-b;
-}
-subgraph cluster_6 {
-a;
-}
-subgraph cluster_7 {
-5;
 1;
-10;
-4;
-}
-subgraph cluster_8 {
-abc;
-}
-subgraph cluster_9 {
-9;
-7;
-6;
-8;
 2;
+4;
+5;
 3;
-}
-1 -> 4 []
+1 -> 2 [color=yellow]
 ;
-7 -> 8 []
+4 -> 5 [color=black]
 ;
-5 -> 10 []
+2 -> 3 [color=yellow]
 ;
-8 -> 9 []
+3 -> 5 [color=black]
 ;
-9 -> 6 []
+2 -> 5 [color=black]
 ;
-2 -> 6 []
+2 -> 2 [color=black]
 ;
-6 -> 2 []
+3 -> 4 [color=black]
 ;
-3 -> 8 []
+4 -> 1 [color=yellow]
 ;
-9 -> 2 []
+3 -> 1 [color=black]
 ;
-7 -> 2 []
-;
-9 -> 7 []
-;
-4 -> 5 []
-;
-3 -> 6 []
-;
-7 -> 3 []
-;
-6 -> 7 []
-;
-10 -> 8 []
-;
-10 -> 1 []
-;
-2 -> 9 []
-;
-2 -> 7 []
-;
-5 -> abc []
-;
+
 }

@@ -181,6 +181,7 @@ namespace Visualization {
 	private: System::Windows::Forms::Button^ list_edges_button;
 	private: System::Windows::Forms::Button^ min_span_tree_button;
 	private: System::Windows::Forms::Button^ comps;
+	private: System::Windows::Forms::Button^ min_path_button;
 
 
 	private:
@@ -227,6 +228,7 @@ namespace Visualization {
 			this->list_edges_button = (gcnew System::Windows::Forms::Button());
 			this->min_span_tree_button = (gcnew System::Windows::Forms::Button());
 			this->comps = (gcnew System::Windows::Forms::Button());
+			this->min_path_button = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// add_vertex
@@ -495,7 +497,7 @@ namespace Visualization {
 			// 
 			// list_edges_button
 			// 
-			this->list_edges_button->Location = System::Drawing::Point(1514, 224);
+			this->list_edges_button->Location = System::Drawing::Point(1497, 224);
 			this->list_edges_button->Name = L"list_edges_button";
 			this->list_edges_button->Size = System::Drawing::Size(156, 36);
 			this->list_edges_button->TabIndex = 36;
@@ -505,7 +507,7 @@ namespace Visualization {
 			// 
 			// min_span_tree_button
 			// 
-			this->min_span_tree_button->Location = System::Drawing::Point(1276, 101);
+			this->min_span_tree_button->Location = System::Drawing::Point(1276, 147);
 			this->min_span_tree_button->Name = L"min_span_tree_button";
 			this->min_span_tree_button->Size = System::Drawing::Size(135, 40);
 			this->min_span_tree_button->TabIndex = 37;
@@ -523,11 +525,23 @@ namespace Visualization {
 			this->comps->UseVisualStyleBackColor = true;
 			this->comps->Click += gcnew System::EventHandler(this, &TestForm::comps_Click);
 			// 
+			// min_path_button
+			// 
+			this->min_path_button->Location = System::Drawing::Point(1276, 103);
+			this->min_path_button->Name = L"min_path_button";
+			this->min_path_button->Size = System::Drawing::Size(135, 38);
+			this->min_path_button->TabIndex = 39;
+			this->min_path_button->Text = L"min_path";
+			this->min_path_button->UseVisualStyleBackColor = true;
+			this->min_path_button->Click += gcnew System::EventHandler(this, &TestForm::min_path_button_Click);
+			// 
 			// TestForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
+			this->AutoSize = true;
 			this->ClientSize = System::Drawing::Size(1682, 553);
+			this->Controls->Add(this->min_path_button);
 			this->Controls->Add(this->comps);
 			this->Controls->Add(this->min_span_tree_button);
 			this->Controls->Add(this->list_edges_button);
@@ -561,6 +575,7 @@ namespace Visualization {
 			this->Controls->Add(this->add_edge);
 			this->Controls->Add(this->add_vertex);
 			this->Name = L"TestForm";
+			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
 			this->Text = L"Graph";
 			this->ResumeLayout(false);
 			this->PerformLayout();
@@ -873,5 +888,29 @@ namespace Visualization {
 		Graphs::create_picture(filename, output_image);
 		this->web_browser->Refresh();
 	}
-	};
+	private: System::Void min_path_button_Click(System::Object^ sender, System::EventArgs^ e) {
+		if (weighted) {
+			return;
+		}
+		string s1 = marshal_as<string>(this->box_vertex1->Text);
+		string s2 = marshal_as<string>(this->box_vertex2->Text);
+		auto graph = get_current_graph();
+		auto vertices = get_current_vertices();
+		if (vertices->find(s1) == vertices->end() || vertices->find(s2) == vertices->end()) {
+			return;
+		}
+		auto path = graph->shortest_way(vertices->at(s1), vertices->at(s2));
+
+		std::string filename = "output_graph.dot";
+		std::string output_image = "site\\output_image.png";
+
+		auto colors = Graphs::EdgeColors<string>();
+		for (auto& it : path) {
+			colors[it] = "yellow";
+		}
+		Graphs::create_dot_file(*graph, filename, "black", &colors);
+		Graphs::create_picture(filename, output_image);
+		this->web_browser->Refresh();
+	}
+};
 }
