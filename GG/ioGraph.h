@@ -156,7 +156,10 @@ namespace Graphs {
 	}
 
 	template<class T>
-	void create_dot_file(Graphs::IGraph<T>& graph, const std::string& filename, const string& default_color = "black", unordered_map<Edge<T>, string, EdgeHash<T>>* color = nullptr, string final_command = "") {
+	void create_dot_file(Graphs::IGraph<T>& graph, 
+		const std::string& filename, const string& default_color = "black", 
+		unordered_map<Edge<T>, string, EdgeHash<T>>* color = nullptr, 
+		string final_command = "") {
 		std::ofstream dotFile(filename);
 		string edge_s = " -- ";
 		if (graph.is_directed()) {

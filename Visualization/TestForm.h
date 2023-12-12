@@ -180,6 +180,7 @@ namespace Visualization {
 	private: System::Windows::Forms::Button^ adjacency_matrix_button;
 	private: System::Windows::Forms::Button^ list_edges_button;
 	private: System::Windows::Forms::Button^ min_span_tree_button;
+	private: System::Windows::Forms::Button^ comps;
 
 
 	private:
@@ -225,6 +226,7 @@ namespace Visualization {
 			this->adjacency_matrix_button = (gcnew System::Windows::Forms::Button());
 			this->list_edges_button = (gcnew System::Windows::Forms::Button());
 			this->min_span_tree_button = (gcnew System::Windows::Forms::Button());
+			this->comps = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// add_vertex
@@ -266,14 +268,14 @@ namespace Visualization {
 			this->web_browser->Location = System::Drawing::Point(12, 12);
 			this->web_browser->MinimumSize = System::Drawing::Size(20, 20);
 			this->web_browser->Name = L"web_browser";
-			this->web_browser->ScrollBarsEnabled = false;
+			this->web_browser->ScriptErrorsSuppressed = true;
 			this->web_browser->Size = System::Drawing::Size(956, 529);
 			this->web_browser->TabIndex = 9;
 			this->web_browser->Url = (gcnew System::Uri(L"D:\\VisualStudioProjects\\GG\\Visualization\\site\\index.html", System::UriKind::Absolute));
 			// 
 			// find_cycle
 			// 
-			this->find_cycle->Location = System::Drawing::Point(1135, 193);
+			this->find_cycle->Location = System::Drawing::Point(1135, 103);
 			this->find_cycle->Name = L"find_cycle";
 			this->find_cycle->Size = System::Drawing::Size(135, 38);
 			this->find_cycle->TabIndex = 10;
@@ -283,7 +285,7 @@ namespace Visualization {
 			// 
 			// remove_vertex
 			// 
-			this->remove_vertex->Location = System::Drawing::Point(1135, 103);
+			this->remove_vertex->Location = System::Drawing::Point(1276, 12);
 			this->remove_vertex->Name = L"remove_vertex";
 			this->remove_vertex->Size = System::Drawing::Size(135, 39);
 			this->remove_vertex->TabIndex = 11;
@@ -293,7 +295,7 @@ namespace Visualization {
 			// 
 			// remove_edge
 			// 
-			this->remove_edge->Location = System::Drawing::Point(1135, 149);
+			this->remove_edge->Location = System::Drawing::Point(1276, 59);
 			this->remove_edge->Name = L"remove_edge";
 			this->remove_edge->Size = System::Drawing::Size(135, 38);
 			this->remove_edge->TabIndex = 12;
@@ -503,7 +505,7 @@ namespace Visualization {
 			// 
 			// min_span_tree_button
 			// 
-			this->min_span_tree_button->Location = System::Drawing::Point(1276, 12);
+			this->min_span_tree_button->Location = System::Drawing::Point(1276, 101);
 			this->min_span_tree_button->Name = L"min_span_tree_button";
 			this->min_span_tree_button->Size = System::Drawing::Size(135, 40);
 			this->min_span_tree_button->TabIndex = 37;
@@ -511,11 +513,22 @@ namespace Visualization {
 			this->min_span_tree_button->UseVisualStyleBackColor = true;
 			this->min_span_tree_button->Click += gcnew System::EventHandler(this, &TestForm::min_span_tree_button_Click);
 			// 
+			// comps
+			// 
+			this->comps->Location = System::Drawing::Point(1135, 147);
+			this->comps->Name = L"comps";
+			this->comps->Size = System::Drawing::Size(135, 38);
+			this->comps->TabIndex = 38;
+			this->comps->Text = L"comps";
+			this->comps->UseVisualStyleBackColor = true;
+			this->comps->Click += gcnew System::EventHandler(this, &TestForm::comps_Click);
+			// 
 			// TestForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(1682, 553);
+			this->Controls->Add(this->comps);
 			this->Controls->Add(this->min_span_tree_button);
 			this->Controls->Add(this->list_edges_button);
 			this->Controls->Add(this->adjacency_matrix_button);
@@ -797,7 +810,7 @@ namespace Visualization {
 				auto casted_g = dynamic_cast<Graphs::UndirectedGraph<string>*>(g);
 				auto casted_g_ = dynamic_cast<Graphs::UndirectedGraph<string>*>(g_);
 				*casted_g_ = *casted_g;
-			}			
+			}
 			update_picture_graph();
 		}
 		catch (...) {
@@ -821,5 +834,44 @@ namespace Visualization {
 		Graphs::create_picture(filename, output_image);
 		this->web_browser->Refresh();
 	}
-};
+	private: System::Void comps_Click(System::Object^ sender, System::EventArgs^ e) {
+		auto g = get_current_graph();
+		auto comps = g->get_connected_components();
+		std::string filename = "output_graph.dot";
+		std::string output_image = "site\\output_image.png";
+
+		std::ofstream dotFile(filename);
+		string edge_s = " -- ";
+		if (g->is_directed()) {
+			edge_s[2] = '>';
+			dotFile << "di";
+		}
+
+		dotFile << "graph G {" << std::endl;
+
+		int num_cluster = 0;
+		for (auto& vv : comps) {
+			dotFile << "subgraph cluster_" << ++num_cluster << " {" << endl;
+			for (auto& v : vv) {
+				dotFile << v.get_object() << ";\n";
+			}
+			dotFile << "}" << endl;
+		}
+
+		for (Graphs::Edge<string> edge : g->get_edges()) {
+			dotFile << edge.vertex1.get_object() << edge_s << edge.vertex2.get_object();
+			dotFile << " [";
+			if (g->is_weighted()) {
+				dotFile << "label=" << edge.get_weight();
+			}
+			dotFile << "]" << std::endl;
+			dotFile << ";" << std::endl;
+		}
+		dotFile << "}" << std::endl;
+		dotFile.close();
+
+		Graphs::create_picture(filename, output_image);
+		this->web_browser->Refresh();
+	}
+	};
 }
