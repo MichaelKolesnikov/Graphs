@@ -1,8 +1,3 @@
 graph G {
-a;
-ab;
-abc;
-a -- ab [color=black]
-;
 
 }

@@ -218,9 +218,7 @@ namespace Graphs {
 						PairOfVertices<T> e1 = { i, j };
 						PairOfVertices<T> e2 = { i, k };
 						PairOfVertices<T> e3 = { k, j };
-						if (i.get_object() == "1" && j.get_object() == "3") {
-							int gg = 0;
-						}
+
 						if (!dist.contains(e2) || dist[e2] == INT_MAX) {
 							dist[e2] = INT_MAX;
 							continue;
@@ -229,16 +227,10 @@ namespace Graphs {
 							dist[e3] = INT_MAX;
 							continue;
 						}
-						if (i.get_object() == "1" && j.get_object() == "3") {
-							int gg = 0;
-						}
+
 						if (!dist.contains(e1) || dist[e1] > dist[e2] + dist[e3]) {
 							dist[e1] = dist[e2] + dist[e3];
 							next[e1] = next[e2];
-							int ggg = 0;
-						}
-						if (i.get_object() == "1" && j.get_object() == "3") {
-							int gg = 0;
 						}
 					}
 				}

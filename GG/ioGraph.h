@@ -56,7 +56,7 @@ namespace Graphs {
 		}
 	}
 	template <class T>
-	void input_matrix(int n, IGraph<T>& g, VectorOfVertices<T>& v) {
+	void input_matrix(int n, IGraph<T>& g, VectorOfVertices<T>& v, istream& cin = std::cin) {
 		int one;
 		for (int i = 1; i <= n; ++i) {
 			for (int j = 1; j <= n; ++j) {
@@ -68,7 +68,7 @@ namespace Graphs {
 		}
 	}
 	template <class T>
-	void input_edges(int m, IGraph<T>& g, VectorOfVertices<T>& v) {
+	void input_edges(int m, IGraph<T>& g, VectorOfVertices<T>& v, std::istream& cin = std::cin) {
 		int a, b;
 		for (int i = 0; i < m; ++i) {
 			cin >> a >> b;
@@ -97,7 +97,7 @@ namespace Graphs {
 	}
 
 	template <class T>
-	void output_vertices(VectorOfVertices<T>& vertices, bool size_ = false) {
+	void output_vertices(VectorOfVertices<T>& vertices, bool size_ = false, ostream& cout = std::cout) {
 		if (size_) {
 			cout << vertices.size() << '\n';
 		}
@@ -107,7 +107,7 @@ namespace Graphs {
 		cout << '\n';
 	}
 	template <class T>
-	void output_vertices(SetOfVertices<T>& vertices, bool size_ = false) {
+	void output_vertices(SetOfVertices<T>& vertices, bool size_ = false, ostream& cout = std::cout) {
 		if (size_) {
 			cout << "Count of vertexes = " << vertices.size() << '\n';
 		}
@@ -118,7 +118,7 @@ namespace Graphs {
 	}
 
 	template <class T>
-	void output_way(VectorOfEdges<T>& way, bool size_ = false) {
+	void output_way(VectorOfEdges<T>& way, bool size_ = false, ostream& cout = std::cout) {
 		if (size_) {
 			cout << way.size() << '\n';
 		}
@@ -132,7 +132,7 @@ namespace Graphs {
 		cout << '\n';
 	}
 	template <class T>
-	bool output_cycle(VectorOfEdges<T>& cycle, bool size_ = false) {
+	bool output_cycle(VectorOfEdges<T>& cycle, bool size_ = false, ostream& cout = std::cout) {
 		if (cycle.size() == 0) {
 			return false;
 		}
