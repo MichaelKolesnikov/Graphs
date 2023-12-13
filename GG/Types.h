@@ -189,7 +189,7 @@ namespace Graphs {
 	
 
 	template <class T>
-	using DistanceMatrixBetweenVertices = unordered_map<PairOfVertices<T>, uint64_t, PairOfVerticesHash<T>>;
+	using DistanceMatrixBetweenVertices = unordered_map<PairOfVertices<T>, int64_t, PairOfVerticesHash<T>>;
 	template <class T>
 	using MatrixOfPathsBetweenVertices = unordered_map<PairOfVertices<T>, Vertex<T>, PairOfVerticesHash<T>>;
 
