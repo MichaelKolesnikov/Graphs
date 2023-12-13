@@ -6,6 +6,8 @@
 #include <memory>
 #include <set>
 #include <stdexcept>
+#include <optional>
+#include <sstream>
 
 namespace Graphs {
 	using namespace std;
@@ -70,6 +72,29 @@ namespace Graphs {
 	using DictOfVertices = unordered_map<T, Vertex<T>>;
 
 	template <class T>
+	struct PairOfVertices {
+		Vertex<T> vertex1, vertex2;
+		PairOfVertices() {}
+		PairOfVertices(const Vertex<T>& vertex1, const Vertex<T>& vertex2) : vertex1(vertex1), vertex2(vertex2) {}
+
+		bool operator==(const PairOfVertices<T>& other) const {
+			return this->vertex1 == other.vertex1 && this->vertex2 == other.vertex2;
+		}
+
+		bool operator!=(const PairOfVertices<T>& other) const {
+			return !this->operator==(other);
+		}
+	};
+	template <class T>
+	struct PairOfVerticesHash {
+		std::size_t operator()(const PairOfVertices<T>& pair) const {
+			std::size_t hash1 = VertexHash<T>()(pair.vertex1);
+			std::size_t hash2 = VertexHash<T>()(pair.vertex2);
+			return hash1 ^ (hash2 << 1);
+		}
+	};
+	
+	template <class T>
 	class Edge {
 	protected:
 		static inline int edge_id_free = 0;
@@ -106,13 +131,13 @@ namespace Graphs {
 			return other.vertex1 == other.vertex2;
 		}
 
-		bool is_positively_incidental(Vertex<T> vertex) {
+		bool is_positively_incidental(Vertex<T> vertex) const {
 			return vertex == vertex1;
 		}
-		bool is_negatively_incidental(Vertex<T> vertex) {
+		bool is_negatively_incidental(Vertex<T> vertex) const {
 			return vertex == vertex2;
 		}
-		bool is_incidental(Vertex<T> vertex) {
+		bool is_incidental(Vertex<T> vertex) const {
 			return this->is_positively_incidental(vertex) || this->is_negatively_incidental(vertex);
 		}
 
@@ -126,11 +151,19 @@ namespace Graphs {
 			return this->edge_id < other.edge_id;
 		}
 
+		bool is_equal(const Edge<T>& other) const {
+			return this->vertex1 == other.vertex1 && this->vertex2 == other.vertex2;
+		}
+
 		Vertex<T> get_neighbor(const Vertex<T>& vertex) const {
 			if (vertex1 == vertex) {
 				return vertex2;
 			}
 			return vertex1;
+		}
+
+		PairOfVertices<T> to_pair_of_vertices() const {
+			return { this->vertex1, this->vertex2 };
 		}
 	};
 	template <class T>
@@ -140,9 +173,25 @@ namespace Graphs {
 		}
 	};
 	template <class T>
+	struct EdgeHashByVertices {
+		std::size_t operator()(const Edge<T>& e) const {
+			std::size_t first_hash = std::hash<uint64_t>()(e.vertex1.get_code());
+			std::size_t second_hash = std::hash<uint64_t>()(e.vertex2.get_code());
+
+			return first_hash ^ (second_hash << 1);
+		}
+	};
+	template <class T>
 	using Edges = set<Edge<T>>;
 	template <class T>
 	using VectorOfEdges = vector<Edge<T>>;
+
+	
+
+	template <class T>
+	using DistanceMatrixBetweenVertices = unordered_map<PairOfVertices<T>, uint64_t, PairOfVerticesHash<T>>;
+	template <class T>
+	using MatrixOfPathsBetweenVertices = unordered_map<PairOfVertices<T>, Vertex<T>, PairOfVerticesHash<T>>;
 
 	template <class T>
 	using HandleILGraph = unordered_map<Vertex<T>, Edges<T>, VertexHash<T>>;

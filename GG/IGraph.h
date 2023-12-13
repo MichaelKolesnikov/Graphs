@@ -47,6 +47,7 @@ namespace Graphs {
 
 		virtual bool search_vertex(const Vertex<T>& vertex) = 0;
 		virtual bool search_edge(const Edge<T>& edge) = 0;
+		virtual optional<Edge<T>> search_edge(const Vertex<T>& vertex1, const Vertex<T>& vertex2) = 0;
 
 		virtual void add_vertex(const Vertex<T>& vertex) = 0;
 		virtual void add_edge(const Edge<T>& edge) = 0;

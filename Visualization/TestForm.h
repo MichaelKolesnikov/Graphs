@@ -889,9 +889,6 @@ namespace Visualization {
 		this->web_browser->Refresh();
 	}
 	private: System::Void min_path_button_Click(System::Object^ sender, System::EventArgs^ e) {
-		if (weighted) {
-			return;
-		}
 		string s1 = marshal_as<string>(this->box_vertex1->Text);
 		string s2 = marshal_as<string>(this->box_vertex2->Text);
 		auto graph = get_current_graph();

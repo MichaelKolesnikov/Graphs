@@ -1,26 +1,8 @@
-digraph G {
-1;
-2;
-4;
-5;
-3;
-1 -> 2 [color=yellow]
-;
-4 -> 5 [color=black]
-;
-2 -> 3 [color=yellow]
-;
-3 -> 5 [color=black]
-;
-2 -> 5 [color=black]
-;
-2 -> 2 [color=black]
-;
-3 -> 4 [color=black]
-;
-4 -> 1 [color=yellow]
-;
-3 -> 1 [color=black]
+graph G {
+a;
+ab;
+abc;
+a -- ab [color=black]
 ;
 
 }

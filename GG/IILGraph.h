@@ -14,10 +14,13 @@ namespace Graphs {
 		vector<Vertex<T>> vector_of_vertices;
 		vector<VectorOfVertices<T>> connected_components;
 		Edges<T> some_edges;
-		
+
 		EdgeOfOrigin<T> origin;
 		Distances<T> distances;
 		Vertex<T> cycle_st;
+
+		DistanceMatrixBetweenVertices<T> dist;
+		MatrixOfPathsBetweenVertices<T> next;
 
 		void simple_dfs(const Vertex<T>& start_vertex) {
 			stack<Vertex<T>> stack;
@@ -107,12 +110,25 @@ namespace Graphs {
 			if (!(ug.count(edge.vertex1) > 0 && ug.count(edge.vertex2) > 0)) {
 				return false;
 			}
-			for (Vertex<T> v : this->get_neighbors(edge.vertex1)) {
-				if (v.is_incidental(edge)) {
+			for (Edge<T> e : this->ug[edge.vertex1]) {
+				if (e.is_negatively_incidental(edge.vertex2)) {
 					return true;
 				}
 			}
 			return false;
+		}
+		optional<Edge<T>> search_edge(const Vertex<T>& vertex1, const Vertex<T>& vertex2) override {
+			optional<Edge<T>> answer;
+			if (!(ug.count(vertex1) > 0 && ug.count(vertex2) > 0)) {
+				return answer;
+			}
+			for (Edge<T> e : this->ug[vertex1]) {
+				if (e.is_negatively_incidental(vertex2)) {
+					answer = e;
+					return answer;
+				}
+			}
+			return answer;
 		}
 
 		void add_vertex(const Vertex<T>& vertex) override {
@@ -139,7 +155,7 @@ namespace Graphs {
 			auto comps = this->get_connected_components();
 			return comps.size() <= 1;
 		}
-		
+
 		VectorOfVertices<T> get_connected_component_containing(const Vertex<T>& vertex) override {
 			vector_of_vertices.clear();
 			vertex_used.clear();
@@ -173,10 +189,101 @@ namespace Graphs {
 				}
 				return distances;
 			}
-			else {
-				// Dijkstra's algorithm
+		}
+
+		void calculate_FloydWarshall() {
+			dist.clear();
+			next.clear();
+
+			for (Edge<T> e : this->get_edges()) {
+				dist[e.to_pair_of_vertices()] = e.get_weight();
+				next[e.to_pair_of_vertices()] = e.vertex2;
+				if (!this->directed) {
+					dist[e.get_reverse().to_pair_of_vertices()] = e.get_weight();
+					next[e.get_reverse().to_pair_of_vertices()] = e.vertex1;
+				}
+			}
+			for (auto& p : this->ug) {
+				auto v = p.first;
+				dist[{v, v}] = 0;
+				next[{v, v}] = v;
+			}
+			for (auto& p1 : this->ug) {
+				Vertex<T> k = p1.first;
+				for (auto& p2 : this->ug) {
+					Vertex<T> i = p2.first;
+					for (auto& p3 : this->ug) {
+						Vertex<T> j = p3.first;
+
+						PairOfVertices<T> e1 = { i, j };
+						PairOfVertices<T> e2 = { i, k };
+						PairOfVertices<T> e3 = { k, j };
+						if (i.get_object() == "1" && j.get_object() == "3") {
+							int gg = 0;
+						}
+						if (!dist.contains(e2) || dist[e2] == INT_MAX) {
+							dist[e2] = INT_MAX;
+							continue;
+						}
+						if (!dist.contains(e3) || dist[e3] == INT_MAX) {
+							dist[e3] = INT_MAX;
+							continue;
+						}
+						if (i.get_object() == "1" && j.get_object() == "3") {
+							int gg = 0;
+						}
+						if (!dist.contains(e1) || dist[e1] > dist[e2] + dist[e3]) {
+							dist[e1] = dist[e2] + dist[e3];
+							next[e1] = next[e2];
+							int ggg = 0;
+						}
+						if (i.get_object() == "1" && j.get_object() == "3") {
+							int gg = 0;
+						}
+					}
+				}
+			}
+		}
+
+		/*
+3
+1 2 1
+1 3 2
+1 3 10
+		*/
+
+		DistanceMatrixBetweenVertices<T> get_dists_Floyd() {
+			return this->dist;
+		}
+
+		VectorOfEdges<T> get_path_from_Floyd(const Vertex<T>& vertex1, const Vertex<T>& vertex2) {
+			if (this->ug.find(vertex1) == this->ug.end()) {
 				return {};
 			}
+			if (this->ug.find(vertex2) == this->ug.end()) {
+				return {};
+			}
+			if (this->next.find({ vertex1, vertex2 }) == this->next.end()) {
+				return {};
+			}
+			/*ostringstream my_out;
+			for (auto& p : this->next) {
+				PairOfVertices<T> pair_ = p.first;
+				Vertex<T> v = p.second;
+				my_out << pair_.vertex1.get_object() << ' ' << pair_.vertex2.get_object() << ' ' << v.get_object() << endl;
+			}
+			string s = my_out.str();*/
+			Vertex<T> st = vertex1, next_v;
+			Edge<T> e;
+			VectorOfEdges<T> path;
+			while (st != vertex2) {
+				next_v = this->next[{st, vertex2}];
+				optional<Edge<T>> opt = this->search_edge(st, next_v);
+				e = opt.value();
+				path.push_back(e);
+				st = next_v;
+			}
+			return path;
 		}
 
 		VectorOfEdges<T> shortest_way(const Vertex<T>& initial_vertex, const Vertex<T>& final_vertex) override {
@@ -184,6 +291,10 @@ namespace Graphs {
 				return {};
 			}
 
+			if (this->weighted) {
+				this->calculate_FloydWarshall();
+				return this->get_path_from_Floyd(initial_vertex, final_vertex);
+			}
 			auto distances = this->distances_to_all(initial_vertex);
 			if (vertex_used[final_vertex]) {
 				VectorOfEdges<T> path;
@@ -197,3 +308,24 @@ namespace Graphs {
 		}
 	};
 };
+
+/*
+10
+1 2 4
+2 3 5
+3 6 7
+3 7 8
+6 4 9
+3 8 4
+1 9 3
+9 2 5
+4 5 1
+4 7 3
+
+5
+4 2 3
+1 4 2
+1 2 1
+2 3 2
+1 3 10
+*/
