@@ -1,23 +1,10 @@
-digraph G {
-1;
-2;
-3;
-4;
-5;
-abc;
-1 -> 2 [label=2color=black]
+graph G {
+a;
+ab;
+c;
+c -- c [color=black]
 ;
-3 -> 2 [label=10color=black]
-;
-3 -> 1 [label=10color=black]
-;
-4 -> 5 [label=1color=yellow]
-;
-4 -> abc [label=8color=black]
-;
-3 -> 4 [label=5color=yellow]
-;
-5 -> 2 [label=-100color=yellow]
+a -- c [color=black]
 ;
 
 }

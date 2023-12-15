@@ -15,7 +15,7 @@ namespace Graphs {
 				}
 				if (!this->edge_used[e]) {
 					this->edge_used[e] = 1;
-					Vertex<T> u = this->get_neighbour(v, e);
+					Vertex<T> u = v.get_neighbor(e);
 					this->origin[u] = e;
 					if (!this->vertex_used[u]) {
 						if (dfs_cycle(u)) {
@@ -48,7 +48,7 @@ namespace Graphs {
 			this->weighted = weighted;
 		}
 
-		void add_edge(const Edge<T>& edge) override {
+		bool add_edge(const Edge<T>& edge) override {
 			this->add_vertex(edge.vertex1);
 			this->add_vertex(edge.vertex2);
 
@@ -56,12 +56,15 @@ namespace Graphs {
 				this->ug[edge.vertex1].insert(edge);
 				this->ug[edge.vertex2].insert(edge.get_reverse(true));
 				++this->count_edges;
+				return true;
 			}
 			else if (!this->are_adjacent(edge.vertex1, edge.vertex2)) {
 				this->ug[edge.vertex1].insert(edge);
 				this->ug[edge.vertex2].insert(edge.get_reverse(true));
 				++this->count_edges;
+				return true;
 			}
+			return false;
 		}
 
 		bool remove_vertex(const Vertex<T>& vertex) override {

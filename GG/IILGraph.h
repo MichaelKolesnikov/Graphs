@@ -83,7 +83,7 @@ namespace Graphs {
 		SetOfVertices<T> get_neighbors(const Vertex<T>& vertex) override {
 			set_of_vertices.clear();
 			for (auto& e : this->get_incident_edges(vertex)) {
-				set_of_vertices.insert(this->get_neighbour(vertex, e));
+				set_of_vertices.insert(vertex.get_neighbor(e));
 			}
 			return std::move(set_of_vertices);
 		}
@@ -131,12 +131,13 @@ namespace Graphs {
 			return answer;
 		}
 
-		void add_vertex(const Vertex<T>& vertex) override {
+		bool add_vertex(const Vertex<T>& vertex) override {
 			if (ug.count(vertex) > 0) {
-				return;
+				return false;
 			}
 			++this->count_vertices;
 			ug[vertex] = {};
+			return true;
 		}
 
 		bool remove_edge(const Edge<T>& edge) override {
@@ -237,13 +238,6 @@ namespace Graphs {
 			}
 		}
 
-		/*
-3
-1 2 1
-1 3 2
-1 3 10
-		*/
-
 		DistanceMatrixBetweenVertices<T> get_dists_Floyd() {
 			return this->dist;
 		}
@@ -300,24 +294,3 @@ namespace Graphs {
 		}
 	};
 };
-
-/*
-10
-1 2 4
-2 3 5
-3 6 7
-3 7 8
-6 4 9
-3 8 4
-1 9 3
-9 2 5
-4 5 1
-4 7 3
-
-5
-4 2 3
-1 4 2
-1 2 1
-2 3 2
-1 3 10
-*/

@@ -89,18 +89,21 @@ namespace Graphs {
 			this->weighted = weighted;
 		}
 
-		void add_edge(const Edge<T>& edge) override {
+		bool add_edge(const Edge<T>& edge) override {
 			this->add_vertex(edge.vertex1);
 			this->add_vertex(edge.vertex2);
 
 			if (this->multiple_edges) {
 				this->ug[edge.vertex1].insert(edge);
 				++this->count_edges;
+				return true;
 			}
 			else if (!this->are_adjacent(edge.vertex1, edge.vertex2)) {
 				this->ug[edge.vertex1].insert(edge);
 				++this->count_edges;
+				return true;
 			}
+			return false;
 		}
 
 		int remove_negatively_incident_edges(const Vertex<T>& vertex) {

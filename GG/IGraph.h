@@ -41,19 +41,16 @@ namespace Graphs {
 		virtual int degree_of_vertex(const Vertex<T>& vertex) = 0;
 		virtual Edges<T> get_incident_edges(const Vertex<T>& vertex) = 0;
 		virtual SetOfVertices<T> get_neighbors(const Vertex<T>& vertex) = 0;
-		Vertex<T> get_neighbour(const Vertex<T>& vertex, const Edge<T>& edge) const {
-			return vertex.get_neighbor(edge);
-		}
 
 		virtual bool search_vertex(const Vertex<T>& vertex) = 0;
 		virtual bool search_edge(const Edge<T>& edge) = 0;
 		virtual optional<Edge<T>> search_edge(const Vertex<T>& vertex1, const Vertex<T>& vertex2) = 0;
 
-		virtual void add_vertex(const Vertex<T>& vertex) = 0;
-		virtual void add_edge(const Edge<T>& edge) = 0;
-		void add_edge_(const Vertex<T>& vertex1, const Vertex<T> vertex2) {
+		virtual bool add_vertex(const Vertex<T>& vertex) = 0;
+		virtual bool add_edge(const Edge<T>& edge) = 0;
+		bool add_edge_(const Vertex<T>& vertex1, const Vertex<T> vertex2) {
 			Edge<T> e(vertex1, vertex2);
-			this->add_edge(e);
+			return this->add_edge(e);
 		}
 
 		virtual bool remove_vertex(const Vertex<T>& vertex) = 0;
@@ -104,7 +101,7 @@ namespace Graphs {
 					return false;
 				}
 			}
-			for (auto v : this->get_vertexes()) {
+			for (auto v : this->get_vertices()) {
 				if (this->degree_of_vertex(v) % 2 == 1) {
 					return false;
 				}
@@ -122,7 +119,7 @@ namespace Graphs {
 				}
 			}
 			int number_of_odd_vertices = 0;
-			for (auto v : this->get_vertexes()) {
+			for (auto v : this->get_vertices()) {
 				number_of_odd_vertices += this->degree_of_vertex(v) % 2 == 1;
 				if (number_of_odd_vertices > 2) {
 					return false;

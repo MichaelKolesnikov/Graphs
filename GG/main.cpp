@@ -14,9 +14,6 @@ using namespace Graphs;
 
 
 int main() {
-	string filename = "output_graph.dot";
-	string output_image = "site\\output_image.png";
-
 	int n = 5;
 	VectorOfVertices<int> v;
 	create_vertices(v, n);
@@ -27,9 +24,5 @@ int main() {
 	graph.add_edge({ v[2], v[4] });
 	graph.add_edge({ v[2], v[5] });
 
-	create_dot_file(graph, filename);
-
-	string command = "dot -Tpng " + filename + " -o " + output_image;
-	system(command.c_str());
-
+	output_graph(graph);
 }

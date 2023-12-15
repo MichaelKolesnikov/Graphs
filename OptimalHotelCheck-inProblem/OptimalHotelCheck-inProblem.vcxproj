@@ -19,12 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{a0fa0523-ba54-47a4-a799-014ba089b9c9}</ProjectGuid>
-    <RootNamespace>GG</RootNamespace>
+    <ProjectGuid>{99c9e98c-fb7b-4bbf-9d32-cc559880d7c0}</ProjectGuid>
+    <RootNamespace>OptimalHotelCheckinProblem</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>GraphSolution</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -106,14 +105,10 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\Junk\SFML\SFML-2.6.1-windows-vc17-64-bit\SFML-2.6.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Junk\SFML\SFML-2.6.1-windows-vc17-64-bit\SFML-2.6.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-graphics-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-system-d.lib;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -133,18 +128,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="OptimalHotelCheck-inProblem.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DirectedGraph.h" />
-    <ClInclude Include="Graphs.h" />
-    <ClInclude Include="IGraph.h" />
-    <ClInclude Include="IILGraph.h" />
-    <ClInclude Include="ioGraph.h" />
-    <ClInclude Include="ITree.h" />
-    <ClInclude Include="Tree.h" />
-    <ClInclude Include="Types.h" />
-    <ClInclude Include="UndirectedGraph.h" />
+    <ClInclude Include="Hotel.h" />
+    <ClInclude Include="Man.h" />
+    <ClInclude Include="OptimalSettlement.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

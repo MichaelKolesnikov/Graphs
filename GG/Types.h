@@ -8,6 +8,7 @@
 #include <stdexcept>
 #include <optional>
 #include <sstream>
+#include <ranges>
 
 namespace Graphs {
 	using namespace std;
@@ -19,7 +20,7 @@ namespace Graphs {
 
 	template <class T>
 	class Vertex {
-	private:
+	protected:
 		static inline uint64_t vertex_id_free = 0;
 		uint64_t vertex_id;
 		shared_ptr<T> ptr_to_object;
@@ -73,12 +74,12 @@ namespace Graphs {
 
 	template <class T>
 	struct PairOfVertices {
-		Vertex<T> vertex1, vertex2;
+		Vertex<T> left, right;
 		PairOfVertices() {}
-		PairOfVertices(const Vertex<T>& vertex1, const Vertex<T>& vertex2) : vertex1(vertex1), vertex2(vertex2) {}
+		PairOfVertices(const Vertex<T>& left, const Vertex<T>& right) : left(left), right(right) {}
 
 		bool operator==(const PairOfVertices<T>& other) const {
-			return this->vertex1 == other.vertex1 && this->vertex2 == other.vertex2;
+			return this->left == other.left && this->right == other.right;
 		}
 
 		bool operator!=(const PairOfVertices<T>& other) const {
@@ -88,8 +89,8 @@ namespace Graphs {
 	template <class T>
 	struct PairOfVerticesHash {
 		std::size_t operator()(const PairOfVertices<T>& pair) const {
-			std::size_t hash1 = VertexHash<T>()(pair.vertex1);
-			std::size_t hash2 = VertexHash<T>()(pair.vertex2);
+			std::size_t hash1 = VertexHash<T>()(pair.left);
+			std::size_t hash2 = VertexHash<T>()(pair.right);
 			return hash1 ^ (hash2 << 1);
 		}
 	};
@@ -186,8 +187,6 @@ namespace Graphs {
 	template <class T>
 	using VectorOfEdges = vector<Edge<T>>;
 
-	
-
 	template <class T>
 	using DistanceMatrixBetweenVertices = unordered_map<PairOfVertices<T>, int64_t, PairOfVerticesHash<T>>;
 	template <class T>
@@ -200,6 +199,10 @@ namespace Graphs {
 
 	template <class T>
 	using Ancestors = unordered_map<Vertex<T>, Vertex<T>, VertexHash<T>>;
+	template <class T>
+	using WaysToAncestors = unordered_map<Vertex<T>, Edge<T>, VertexHash<T>>;
+	template <class T>
+	using WaysToChildren = HandleILGraph<T>;
 	template <class T>
 	using EdgeOfOrigin = unordered_map<Vertex<T>, Edge<T>, VertexHash<T>>;
 	template <class T>
