@@ -35,4 +35,12 @@ public:
 	std::chrono::system_clock::time_point get_date_of_birth() const {
 		return date_of_birth;
 	}
+
+	bool operator==(const Man& other) const {
+		return this->gender == other.gender &&
+			this->date_of_birth == other.date_of_birth &&
+			this->surname == other.surname &&
+			this->name == other.name &&
+			this->patronymic == other.patronymic;
+	}
 };

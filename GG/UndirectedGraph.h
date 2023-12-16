@@ -39,6 +39,47 @@ namespace Graphs {
 				}
 			}
 		}
+
+		VectorOfVertices<T> answer;
+		VectorOfVertices<T> compsub;
+		bool clique_was_found;
+
+		void extend(VectorOfVertices<T>&& candidates, VectorOfVertices<T>&& not_) {
+			bool condition = true;
+			while (!clique_was_found && candidates.size() > 0 && condition) {
+				Vertex<T> v = candidates.back();
+				compsub.push_back(v);
+				candidates.pop_back();
+				auto cond = std::views::filter([this, v](const Vertex<T>& u) { return this->are_adjacent(v, u);});
+				auto new_candidates_ = candidates | cond;
+				VectorOfVertices<T> new_candidates(std::begin(new_candidates_), std::end(new_candidates_));
+				auto new_not_ = not_ | cond;
+				VectorOfVertices<T> new_not(std::begin(new_not_), std::end(new_not_));
+				if (new_candidates.empty() && new_not.empty()) {
+					answer = compsub;
+					clique_was_found = true;
+					return;
+				}
+				else {
+					extend(std::move(new_candidates), std::move(new_not));
+				}
+				compsub.erase(std::remove(compsub.begin(), compsub.end(), v), compsub.end());
+				not_.push_back(v);
+				for (const Vertex<T>& u : not_) {
+					bool all = true;
+					for (auto& uu : candidates) {
+						if (!this->are_adjacent(u, uu)) {
+							all = false;
+							break;
+						}
+					}
+					if (all) {
+						condition = false;
+						break;
+					}
+				}
+			}
+		}
 	public:
 		UndirectedGraph(bool multiple_edges = false, bool weighted = false) {
 			this->count_vertices = 0;
@@ -165,6 +206,15 @@ namespace Graphs {
 				}
 			}
 			return span_tree;
+		}
+
+		VectorOfVertices<T> clique_search(size_t max_size = INT_MAX) {
+			clique_was_found = false;
+			auto vv = this->get_vertices();
+			VectorOfVertices<T> v(begin(vv), end(vv));
+			VectorOfVertices<T> not_;
+			extend(std::move(v), std::move(not_));
+			return this->answer;
 		}
 	};
 }

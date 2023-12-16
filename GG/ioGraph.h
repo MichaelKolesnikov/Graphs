@@ -156,10 +156,16 @@ namespace Graphs {
 	}
 
 	template<class T>
-	void create_dot_file(Graphs::IGraph<T>& graph, 
-		const std::string& filename, const string& default_color = "black", 
-		unordered_map<Edge<T>, string, EdgeHash<T>>* color = nullptr, 
-		string final_command = "") {
+	void create_dot_file(
+		Graphs::IGraph<T>& graph,
+		const std::string& filename, 
+		const string& default_color = "black",
+		EdgeColors<T>* color = nullptr,
+		VertexColors<T>* vertex_color = nullptr,
+		const string& default_vertex_color = "black",
+		const string& final_command = ""
+	) 
+	{
 		std::ofstream dotFile(filename);
 		string edge_s = " -- ";
 		if (graph.is_directed()) {
@@ -170,7 +176,11 @@ namespace Graphs {
 		dotFile << "graph G {" << std::endl;
 
 		for (const Vertex<T>& vertex : graph.get_vertices()) {
-			dotFile << vertex.get_object() << ";" << std::endl;
+			dotFile << vertex.get_object();
+			if (vertex_color) {
+				dotFile << "[color=" << (vertex_color->contains(vertex) ? vertex_color->at(vertex) : default_vertex_color) << "]";
+			}
+			dotFile << ";" << std::endl;
 		}
 
 		for (Edge<T> edge : graph.get_edges()) {

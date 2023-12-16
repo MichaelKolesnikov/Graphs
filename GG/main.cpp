@@ -20,9 +20,12 @@ int main() {
 	Graphs::UndirectedGraph<int> graph;
 	put_the_vertices_in_the_graph(graph, v);
 	graph.add_edge({ v[1], v[2] });
+	graph.add_edge({ v[1], v[5] });
 	graph.add_edge({ v[2], v[3] });
 	graph.add_edge({ v[2], v[4] });
 	graph.add_edge({ v[2], v[5] });
 
 	output_graph(graph);
+	auto clique = graph.clique_search();
+	output_vertices(clique);
 }

@@ -1,6 +1,4 @@
 #include "Hotel.h"
-#include <unordered_map>
-#include <queue>
 #include "..\\GG\\Graphs.h"
 
 namespace OptimalHotelCheck_inProblem {
@@ -8,6 +6,7 @@ namespace OptimalHotelCheck_inProblem {
 
 	using T = Guest;
 	Hotel get_optimal_settlement(Hotel hotel, UndirectedGraph<T> guests) {
+		Hotel hotel;
 		UndirectedGraph<T> opportunity_graph;
 		// queue<pair<Hotel, SetOfVertices<Guest>>> q;
 		SetOfVertices<T> vertices = guests.get_vertices();
@@ -23,5 +22,6 @@ namespace OptimalHotelCheck_inProblem {
 				}
 			}
 		}
+		return hotel;
 	}
 }

@@ -1,15 +1,20 @@
 #pragma once
 #include "Man.h"
 #include <vector>
-#include <set>
 
 namespace OptimalHotelCheck_inProblem {
 	using namespace std;
 
 	class Guest : public Man {
 	public:
-		Guest(bool gender, const std::string& sur, const std::string& nm, const std::chrono::system_clock::time_point& dob) 
-			: Man(gender, sur, nm, dob) {}
+		Guest(bool gender, const std::string& sur, const std::string& nm, const std::string& patronymic, const std::chrono::system_clock::time_point& dob) 
+			: Man(gender, sur, nm, patronymic, dob) {}
+
+		/*bool operator==(const Guest& other) const {
+			const Man* this_man = this;
+			const Man* other_man = &other;
+			return this_man->operator==(*other_man);
+		}*/
 	};
 
 	class HotelRoom {
@@ -17,10 +22,10 @@ namespace OptimalHotelCheck_inProblem {
 		size_t number;
 		size_t number_of_beds;
 		int cost;
-		std::multiset<Guest> guests;
+		std::vector<Guest> guests;
 	public:
-		HotelRoom() : number_of_beds(1), guests() {}
-		HotelRoom(size_t number, size_t number_of_beds, int cost) : number(number), number_of_beds(number_of_beds), cost(cost), guests() {}
+		HotelRoom() : number_of_beds(1) {}
+		HotelRoom(size_t number, size_t number_of_beds, int cost) : number(number), number_of_beds(number_of_beds), cost(cost) {}
 
 		size_t get_number() const {
 			return this->number;
@@ -34,7 +39,7 @@ namespace OptimalHotelCheck_inProblem {
 			return number_of_beds;
 		}
 
-		std::multiset<Guest> get_guests() const {
+		std::vector<Guest> get_guests() const {
 			return guests;
 		}
 
@@ -42,22 +47,16 @@ namespace OptimalHotelCheck_inProblem {
 			if (guests.size() == number_of_beds) {
 				return false;
 			}
-			guests.insert(guest);
+			guests.push_back(guest);
 			return true;
 		}
 
 		bool evict_a_guest(Guest guest) {
-			if (!guests.contains(guest)) {
+			if (std::find(begin(guests), end(guests), guest) == end(guests)) {
 				return false;
 			}
-			guests.erase(guest);
+			guests.erase(std::remove(begin(guests), end(guests), guest), end(guests));
 			return true;
-		}
-	};
-
-	struct HotelRoomHash {
-		std::size_t operator()(const HotelRoom& room) const {
-			return std::hash<size_t>()(room.get_number());
 		}
 	};
 

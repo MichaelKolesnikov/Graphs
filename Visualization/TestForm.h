@@ -182,6 +182,8 @@ namespace Visualization {
 	private: System::Windows::Forms::Button^ min_span_tree_button;
 	private: System::Windows::Forms::Button^ comps;
 	private: System::Windows::Forms::Button^ min_path_button;
+	private: System::Windows::Forms::Button^ find_clique_button;
+
 
 
 	private:
@@ -229,6 +231,7 @@ namespace Visualization {
 			this->min_span_tree_button = (gcnew System::Windows::Forms::Button());
 			this->comps = (gcnew System::Windows::Forms::Button());
 			this->min_path_button = (gcnew System::Windows::Forms::Button());
+			this->find_clique_button = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// add_vertex
@@ -535,12 +538,23 @@ namespace Visualization {
 			this->min_path_button->UseVisualStyleBackColor = true;
 			this->min_path_button->Click += gcnew System::EventHandler(this, &TestForm::min_path_button_Click);
 			// 
+			// find_clique_button
+			// 
+			this->find_clique_button->Location = System::Drawing::Point(1135, 191);
+			this->find_clique_button->Name = L"find_clique_button";
+			this->find_clique_button->Size = System::Drawing::Size(135, 40);
+			this->find_clique_button->TabIndex = 40;
+			this->find_clique_button->Text = L"find_clique";
+			this->find_clique_button->UseVisualStyleBackColor = true;
+			this->find_clique_button->Click += gcnew System::EventHandler(this, &TestForm::find_clique_button_Click);
+			// 
 			// TestForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(8, 16);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->AutoSize = true;
 			this->ClientSize = System::Drawing::Size(1682, 553);
+			this->Controls->Add(this->find_clique_button);
 			this->Controls->Add(this->min_path_button);
 			this->Controls->Add(this->comps);
 			this->Controls->Add(this->min_span_tree_button);
@@ -671,6 +685,7 @@ namespace Visualization {
 		this->is_directed->Text = "No";
 		this->top_sort_button->Visible = false;
 		this->min_span_tree_button->Visible = true;
+		this->find_clique_button->Visible = true;
 		update_picture_graph();
 	}
 	private: System::Void make_directed_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -678,6 +693,7 @@ namespace Visualization {
 		this->is_directed->Text = "Yes";
 		this->top_sort_button->Visible = true;
 		this->min_span_tree_button->Visible = false;
+		this->find_clique_button->Visible = false;
 		update_picture_graph();
 	}
 	private: System::Void make_unweighted_Click(System::Object^ sender, System::EventArgs^ e) {
@@ -719,7 +735,7 @@ namespace Visualization {
 		std::string filename = "output_graph.dot";
 		std::string output_image = "site\\output_image.png";
 
-		Graphs::create_dot_file(*graph, filename, "black", static_cast<std::unordered_map<Graphs::Edge<string>, std::string, Graphs::EdgeHash<string>>*>(nullptr), additional_command);
+		Graphs::create_dot_file(*graph, filename, "black", static_cast<Graphs::EdgeColors<string>*>(nullptr), static_cast<Graphs::VertexColors<string>*>(nullptr), "", additional_command);
 		Graphs::create_picture(filename, output_image);
 		this->web_browser->Refresh();
 	}
@@ -906,6 +922,22 @@ namespace Visualization {
 			colors[it] = "yellow";
 		}
 		Graphs::create_dot_file(*graph, filename, "black", &colors);
+		Graphs::create_picture(filename, output_image);
+		this->web_browser->Refresh();
+	}
+	private: System::Void find_clique_button_Click(System::Object^ sender, System::EventArgs^ e) {
+		auto g = get_current_graph();
+		auto und = dynamic_cast<Graphs::UndirectedGraph<string>*>(g);
+		auto clique = und->clique_search();
+		std::string filename = "output_graph.dot";
+		std::string output_image = "site\\output_image.png";
+
+		Graphs::VertexColors<string> c;
+		for (auto& v : clique) {
+			c[v] = "red";
+		}
+
+		Graphs::create_dot_file(*und, filename, "black", static_cast<Graphs::EdgeColors<string>*>(nullptr), &c);
 		Graphs::create_picture(filename, output_image);
 		this->web_browser->Refresh();
 	}
