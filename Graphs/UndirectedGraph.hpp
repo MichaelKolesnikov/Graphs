@@ -1,5 +1,5 @@
 #pragma once
-#include "IILGraph.h"
+#include "IILGraph.hpp"
 #include <algorithm>
 #include <functional>
 
@@ -135,7 +135,7 @@ namespace Graphs {
 		}
 
 		IGraph<T>& Icopy() override {
-			UndirectedGraph<T> copied(this->multiple_edges);
+			UndirectedGraph<T>& copied = *(new UndirectedGraph<T>(this->multiple_edges));
 			for (Vertex<T> v : this->get_vertices()) {
 				copied.add_vertex(v);
 			}

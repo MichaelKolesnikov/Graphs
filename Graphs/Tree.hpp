@@ -1,4 +1,4 @@
-#include "ITree.h"
+#include "ITree.hpp"
 
 namespace Graphs {
 	template <class T>

@@ -9,6 +9,7 @@
 #include <optional>
 #include <sstream>
 #include <ranges>
+#include <climits>
 
 namespace Graphs {
 	using namespace std;

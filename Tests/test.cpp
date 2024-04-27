@@ -1,5 +1,5 @@
-#include "pch.h"
-#include "..\\GG\\Graphs.h"
+#include <gtest/gtest.h>
+#include "../Graphs/Graphs.hpp"
 
 using namespace Graphs;
 
@@ -229,4 +229,9 @@ TEST(TestCaseSpan, Span) {
 	out << answer << endl;
 	string answer_ = "3\n";
 	EXPECT_EQ(out.str(), answer_);
+}
+
+int main(int argc, char** argv) {
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }

@@ -1,9 +1,8 @@
 #pragma once
-#include "Graphs.h"
+#include "Graphs.hpp"
 #include <iostream>
 #include <fstream>
 #include <memory>
-#include <Windows.h>
 
 namespace Graphs {
 	using namespace std;
@@ -155,73 +154,73 @@ namespace Graphs {
 		return true;
 	}
 
-	template<class T>
-	void create_dot_file(
-		Graphs::IGraph<T>& graph,
-		const std::string& filename, 
-		const string& default_color = "black",
-		EdgeColors<T>* color = nullptr,
-		VertexColors<T>* vertex_color = nullptr,
-		const string& default_vertex_color = "black",
-		const string& final_command = ""
-	) 
-	{
-		std::ofstream dotFile(filename);
-		string edge_s = " -- ";
-		if (graph.is_directed()) {
-			edge_s[2] = '>';
-			dotFile << "di";
-		}
+	// template<class T>
+	// void create_dot_file(
+	// 	Graphs::IGraph<T>& graph,
+	// 	const std::string& filename, 
+	// 	const string& default_color = "black",
+	// 	EdgeColors<T>* color = nullptr,
+	// 	VertexColors<T>* vertex_color = nullptr,
+	// 	const string& default_vertex_color = "black",
+	// 	const string& final_command = ""
+	// ) 
+	// {
+	// 	std::ofstream dotFile(filename);
+	// 	string edge_s = " -- ";
+	// 	if (graph.is_directed()) {
+	// 		edge_s[2] = '>';
+	// 		dotFile << "di";
+	// 	}
 
-		dotFile << "graph G {" << std::endl;
+	// 	dotFile << "graph G {" << std::endl;
 
-		for (const Vertex<T>& vertex : graph.get_vertices()) {
-			dotFile << vertex.get_object();
-			if (vertex_color) {
-				dotFile << "[color=" << (vertex_color->contains(vertex) ? vertex_color->at(vertex) : default_vertex_color) << "]";
-			}
-			dotFile << ";" << std::endl;
-		}
+	// 	for (const Vertex<T>& vertex : graph.get_vertices()) {
+	// 		dotFile << vertex.get_object();
+	// 		if (vertex_color) {
+	// 			dotFile << "[color=" << (vertex_color->contains(vertex) ? vertex_color->at(vertex) : default_vertex_color) << "]";
+	// 		}
+	// 		dotFile << ";" << std::endl;
+	// 	}
 
-		for (Edge<T> edge : graph.get_edges()) {
-			dotFile << edge.vertex1.get_object() << edge_s << edge.vertex2.get_object();
-			dotFile << " [";
-			if (graph.is_weighted()) {
-				dotFile << "label=" << edge.get_weight();
-			}
-			dotFile << "color=" << (color != nullptr && color->find(edge) != color->end() ? color->at(edge) : default_color);
-			dotFile << "]" << std::endl;
-			dotFile << ";" << std::endl;
-		}
-		dotFile << final_command << std::endl;
-		dotFile << "}" << std::endl;
-		dotFile.close();
-	}
+	// 	for (Edge<T> edge : graph.get_edges()) {
+	// 		dotFile << edge.vertex1.get_object() << edge_s << edge.vertex2.get_object();
+	// 		dotFile << " [";
+	// 		if (graph.is_weighted()) {
+	// 			dotFile << "label=" << edge.get_weight();
+	// 		}
+	// 		dotFile << "color=" << (color != nullptr && color->find(edge) != color->end() ? color->at(edge) : default_color);
+	// 		dotFile << "]" << std::endl;
+	// 		dotFile << ";" << std::endl;
+	// 	}
+	// 	dotFile << final_command << std::endl;
+	// 	dotFile << "}" << std::endl;
+	// 	dotFile.close();
+	// }
 
-	std::wstring ConvertToWideString(const std::string& input) {
-		int size_needed = MultiByteToWideChar(CP_UTF8, 0, &input[0], static_cast<int>(input.size()), NULL, 0);
-		std::wstring wide_string(size_needed, 0);
-		MultiByteToWideChar(CP_UTF8, 0, &input[0], static_cast<int>(input.size()), &wide_string[0], size_needed);
-		return wide_string;
-	}
+	// std::wstring ConvertToWideString(const std::string& input) {
+	// 	int size_needed = MultiByteToWideChar(CP_UTF8, 0, &input[0], static_cast<int>(input.size()), NULL, 0);
+	// 	std::wstring wide_string(size_needed, 0);
+	// 	MultiByteToWideChar(CP_UTF8, 0, &input[0], static_cast<int>(input.size()), &wide_string[0], size_needed);
+	// 	return wide_string;
+	// }
 
-	void create_picture(std::string filename, std::string output_image) {
-		STARTUPINFOW si;
-		PROCESS_INFORMATION pi;
-		ZeroMemory(&si, sizeof(si));
-		si.cb = sizeof(si);
-		ZeroMemory(&pi, sizeof(pi));
+	// void create_picture(std::string filename, std::string output_image) {
+	// 	STARTUPINFOW si;
+	// 	PROCESS_INFORMATION pi;
+	// 	ZeroMemory(&si, sizeof(si));
+	// 	si.cb = sizeof(si);
+	// 	ZeroMemory(&pi, sizeof(pi));
 
-		std::wstring wide_filename = ConvertToWideString(filename);
-		std::wstring wide_output_image = ConvertToWideString(output_image);
+	// 	std::wstring wide_filename = ConvertToWideString(filename);
+	// 	std::wstring wide_output_image = ConvertToWideString(output_image);
 
-		std::wstring command = L"dot -Tpng " + wide_filename + L" -o " + wide_output_image;
+	// 	std::wstring command = L"dot -Tpng " + wide_filename + L" -o " + wide_output_image;
 
-		if (CreateProcessW(NULL, const_cast<LPWSTR>(command.c_str()), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
-			// Ждем завершения процесса
-			WaitForSingleObject(pi.hProcess, INFINITE);
-			CloseHandle(pi.hProcess);
-			CloseHandle(pi.hThread);
-		}
-	}
+	// 	if (CreateProcessW(NULL, const_cast<LPWSTR>(command.c_str()), NULL, NULL, FALSE, CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+	// 		// пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	// 		WaitForSingleObject(pi.hProcess, INFINITE);
+	// 		CloseHandle(pi.hProcess);
+	// 		CloseHandle(pi.hThread);
+	// 	}
+	// }
 }

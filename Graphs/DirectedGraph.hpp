@@ -1,6 +1,6 @@
 #pragma once
-#include "IILGraph.h"
-#include "ioGraph.h"
+#include "IILGraph.hpp"
+#include "ioGraph.hpp"
 #include <memory>
 
 namespace Graphs {
@@ -187,7 +187,7 @@ namespace Graphs {
 		}
 
 		IGraph<T>& Icopy() override {
-			DirectedGraph<T> copied(this->multiple_edges, this->weighted);
+			DirectedGraph<T>& copied = *(new DirectedGraph<T>(this->multiple_edges, this->weighted));
 			for (Vertex<T> v : this->get_vertices()) {
 				copied.add_vertex(v);
 			}

@@ -1,4 +1,4 @@
-﻿#include "IGraph.h"
+﻿#include "IGraph.hpp"
 
 namespace Graphs {
 	template <class T>

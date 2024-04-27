@@ -1,7 +1,8 @@
 #pragma once
-#include "IGraph.h"
+#include "IGraph.hpp"
 #include <memory>
 #include <stack>
+
 namespace Graphs {
 	template <class T>
 	class IILGraph : public IGraph<T> {
@@ -190,6 +191,7 @@ namespace Graphs {
 				}
 				return distances;
 			}
+			return Graphs::Distances<T>();
 		}
 
 		void calculate_FloydWarshall() {
