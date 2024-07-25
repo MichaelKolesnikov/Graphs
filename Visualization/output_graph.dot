@@ -1,7 +1,3 @@
 graph G {
-aa;
-aab;
-aab -- aa [color=black]
-;
 
 }
