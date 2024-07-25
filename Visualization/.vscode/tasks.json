@@ -10,7 +10,9 @@
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "-std=c++23"
+                "-std=c++23",
+                "-lfltk",
+                "-lfltk_images"
             ],
             "options": {
                 "cwd": "${fileDirname}"

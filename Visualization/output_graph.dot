@@ -1,21 +1,7 @@
 graph G {
-a;
-ab;
-abc;
-d;
-r;
-g;
-a -- abc [color=black]
-;
-ab -- abc [color=yellow]
-;
-a -- ab [color=black]
-;
-a -- d [color=black]
-;
-g -- d [color=black]
-;
-g -- ab [color=yellow]
+aa;
+aab;
+aab -- aa [color=black]
 ;
 
 }

@@ -122,10 +122,6 @@ namespace Visualization {
 		return vertices;
 	}
 
-
-	/// <summary>
-	/// —водка дл€ TestForm
-	/// </summary>
 	public ref class TestForm : public System::Windows::Forms::Form {
 	public:
 		TestForm(void) {
@@ -139,9 +135,6 @@ namespace Visualization {
 		}
 
 	protected:
-		/// <summary>
-		/// ќсвободить все используемые ресурсы.
-		/// </summary>
 		~TestForm() {
 			if (components) {
 				delete components;
@@ -187,16 +180,9 @@ namespace Visualization {
 
 
 	private:
-		/// <summary>
-		/// ќб€зательна€ переменна€ конструктора.
-		/// </summary>
 		System::ComponentModel::Container^ components;
 
 #pragma region Windows Form Designer generated code
-		/// <summary>
-		/// “ребуемый метод дл€ поддержки конструктора Ч не измен€йте 
-		/// содержимое этого метода с помощью редактора кода.
-		/// </summary>
 		void InitializeComponent(void) {
 			this->add_vertex = (gcnew System::Windows::Forms::Button());
 			this->add_edge = (gcnew System::Windows::Forms::Button());

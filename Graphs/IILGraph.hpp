@@ -221,17 +221,17 @@ namespace Graphs {
 						PairOfVertices<T> e1 = { i, j };
 						PairOfVertices<T> e2 = { i, k };
 						PairOfVertices<T> e3 = { k, j };
-
-						if (!dist.contains(e2) || dist[e2] == INT_MAX) {
+						
+						if (!(dist.find(e2) != dist.end()) || dist[e2] == INT_MAX) {
 							dist[e2] = INT_MAX;
 							continue;
 						}
-						if (!dist.contains(e3) || dist[e3] == INT_MAX) {
+						if (!(dist.find(e3) != dist.end()) || dist[e3] == INT_MAX) {
 							dist[e3] = INT_MAX;
 							continue;
 						}
 
-						if (!dist.contains(e1) || dist[e1] > dist[e2] + dist[e3]) {
+						if (!(dist.find(e1) != dist.end()) || dist[e1] > dist[e2] + dist[e3]) {
 							dist[e1] = dist[e2] + dist[e3];
 							next[e1] = next[e2];
 						}

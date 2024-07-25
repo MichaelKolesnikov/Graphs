@@ -14,9 +14,9 @@ using namespace Graphs;
 
 
 int main() {
-	cout << "Hello" << endl;
-	std::unordered_map<int, int> m;
-	cout << m.contains(5) << endl;
+	// cout << "Hello" << endl;
+	// std::unordered_map<int, int> m;
+	// cout << m.contains(5) << endl;
 	int n = 5;
 	VectorOfVertices<int> v;
 	create_vertices(v, n);
