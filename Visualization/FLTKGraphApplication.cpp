@@ -16,6 +16,8 @@ using namespace std;
 class GraphApp : public Fl_Double_Window {
 private:
     Fl_Input *vertex1_input, *vertex2_input, *weight_input;
+    Fl_Text_Display* top_sort_result_text_display;
+    Fl_Text_Buffer* top_sort_result_text_buffer;
     Fl_Button *add_vertex_button, *add_edge_button, *remove_vertex_button, *remove_edge_button,
         *find_cycle_button, *top_sort_button, *min_span_tree_button, *comps_button, *min_path_button, *find_clique_button;
     Fl_Check_Button *directed_check, *weighted_check, *multiple_edges_check;
@@ -28,7 +30,6 @@ private:
     Graphs::DictOfVertices<string> vertices_000, vertices_001, vertices_010, vertices_011, vertices_100, vertices_101, vertices_110, vertices_111;
     Graphs::UndirectedGraph<string> graph_000, graph_001, graph_010, graph_011;
     Graphs::DirectedGraph<string> graph_100, graph_101, graph_110, graph_111;
-
     Graphs::IGraph<string>* get_current_graph() {
         Graphs::IGraph<string>* graph = nullptr;
         if (directed == false) {
@@ -96,17 +97,19 @@ private:
         return vertices;
     }
 
-    void update_graph_display() {
-        std::string filename = "output_graph.dot";
-        std::string output_image = "output_image.png";
-        auto current_graph = get_current_graph();
-        Graphs::create_dot_file(*current_graph, filename);
-        Graphs::create_picture(filename, output_image);
-
+    std::string filename = "output_graph.dot";
+    std::string output_image = "output_image.png";
+    void refresh_picture() {
         delete graph_image;
         graph_image = new Fl_PNG_Image(output_image.c_str());
         graph_display->image(graph_image);
         graph_display->redraw();
+    }
+    void update_graph_display() {
+        auto current_graph = get_current_graph();
+        Graphs::create_dot_file(*current_graph, filename);
+        Graphs::create_picture(filename, output_image);
+        this->refresh_picture();
     }
 
 public:
@@ -129,8 +132,11 @@ public:
         min_span_tree_button = new Fl_Button(360, 70, 120, 25, "Span tree");
         comps_button = new Fl_Button(360, 100, 120, 25, "Comps");
         min_path_button = new Fl_Button(360, 100, 120, 25, "Min path");
-        top_sort_button = new Fl_Button(230, 130, 120, 23, "Top sort");
+        top_sort_button = new Fl_Button(230, 130, 120, 25, "Top sort");
         top_sort_button->deactivate();
+        top_sort_result_text_display = new Fl_Text_Display(230, 160, 120, 40);
+        top_sort_result_text_buffer = new Fl_Text_Buffer();
+        top_sort_result_text_display->buffer(top_sort_result_text_buffer);
 
         directed_check = new Fl_Check_Button(10, 130, 120, 25, "Directed");
         weighted_check = new Fl_Check_Button(10, 160, 120, 25, "Weighted");
@@ -242,21 +248,14 @@ public:
         for (auto& e : cycle) {
             colors[e] = "red";
         }
-        std::string filename = "output_graph.dot";
-        std::string output_image = "output_image.png";
         Graphs::create_dot_file(*current_graph, filename, "black", &colors);
         Graphs::create_picture(filename, output_image);
-        delete graph_image;
-        graph_image = new Fl_PNG_Image(output_image.c_str());
-        graph_display->image(graph_image);
-        graph_display->redraw();
+        refresh_picture();
     }
     void find_clique_cb() {
         auto g = get_current_graph();
         auto und = dynamic_cast<Graphs::UndirectedGraph<string>*>(g);
         auto clique = und->clique_search();
-        std::string filename = "output_graph.dot";
-        std::string output_image = "output_image.png";
 
         Graphs::VertexColors<string> c;
         for (auto& v : clique) {
@@ -265,10 +264,7 @@ public:
 
         Graphs::create_dot_file(*und, filename, "black", static_cast<Graphs::EdgeColors<string>*>(nullptr), &c);
         Graphs::create_picture(filename, output_image);
-        delete graph_image;
-        graph_image = new Fl_PNG_Image(output_image.c_str());
-        graph_display->image(graph_image);
-        graph_display->redraw();
+        refresh_picture();
     }
     void min_span_tree_cb() {
         auto g = get_current_graph();
@@ -280,21 +276,14 @@ public:
         for (auto& it : set_) {
             colors[it] = "green";
         }
-        std::string filename = "output_graph.dot";
-        std::string output_image = "output_image.png";
 
         Graphs::create_dot_file(*graph, filename, "black", &colors);
         Graphs::create_picture(filename, output_image);
-        delete graph_image;
-        graph_image = new Fl_PNG_Image(output_image.c_str());
-        graph_display->image(graph_image);
-        graph_display->redraw();
+        refresh_picture();
     }
     void comps_cb() {
         auto g = get_current_graph();
         auto comps = g->get_connected_components();
-        std::string filename = "output_graph.dot";
-        std::string output_image = "output_image.png";
 
         std::ofstream dotFile(filename);
         string edge_s = " -- ";
@@ -327,10 +316,7 @@ public:
         dotFile.close();
 
         Graphs::create_picture(filename, output_image);
-        delete graph_image;
-        graph_image = new Fl_PNG_Image(output_image.c_str());
-        graph_display->image(graph_image);
-        graph_display->redraw();
+        refresh_picture();
     }
     void min_path_cb() {
         string s1 = vertex1_input->value();
@@ -342,26 +328,20 @@ public:
         }
         auto path = graph->shortest_way(vertices->at(s1), vertices->at(s2));
 
-        std::string filename = "output_graph.dot";
-        std::string output_image = "output_image.png";
-
         auto colors = Graphs::EdgeColors<string>();
         for (auto& it : path) {
             colors[it] = "yellow";
         }
         Graphs::create_dot_file(*graph, filename, "black", &colors);
         Graphs::create_picture(filename, output_image);
-        delete graph_image;
-        graph_image = new Fl_PNG_Image(output_image.c_str());
-        graph_display->image(graph_image);
-        graph_display->redraw();
+        refresh_picture();
     }
     void top_sort_cb() {
         auto graph = get_current_graph();
         auto dg = dynamic_cast<Graphs::DirectedGraph<string>*>(graph);
         auto ts = dg->topological_sorting();
         if (ts.size() == 0) {
-            // this->top_sort_result->Text = "Impossible";
+            this->top_sort_result_text_buffer->text("Impossible");
             return;
         }
         std::stringstream ss;
@@ -371,17 +351,12 @@ public:
         }
         ss << "}";
         std::string additional_command = ss.str();
-        // this->top_sort_result->Text = gcnew String(additional_command.c_str());
-        std::string filename = "output_graph.dot";
-        std::string output_image = "output_image.png";
+        top_sort_result_text_buffer->text(additional_command.c_str());
 
         Graphs::create_dot_file(*graph, filename, "black", static_cast<Graphs::EdgeColors<string>*>(nullptr), static_cast<Graphs::VertexColors<string>*>(nullptr), "", additional_command);
         Graphs::create_picture(filename, output_image);
 
-        delete graph_image;
-        graph_image = new Fl_PNG_Image(output_image.c_str());
-        graph_display->image(graph_image);
-        graph_display->redraw();
+        refresh_picture();
     }
 
     void toggle_directed_cb() {
