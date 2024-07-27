@@ -10,8 +10,23 @@
 #include <iostream>
 #include <string>
 #include "../Graphs/Graphs.hpp"
+#include <random>
 
 using namespace std;
+
+std::string generate_random_color() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, 255);
+
+    int r = dis(gen);
+    int g = dis(gen);
+    int b = dis(gen);
+
+    char color[8];
+    snprintf(color, sizeof(color), "#%02X%02X%02X", r, g, b);
+    return std::string(color);
+}
 
 class GraphApp : public Fl_Double_Window {
 private:
@@ -19,7 +34,7 @@ private:
     Fl_Text_Display* top_sort_result_text_display;
     Fl_Text_Buffer* top_sort_result_text_buffer;
     Fl_Button *add_vertex_button, *add_edge_button, *remove_vertex_button, *remove_edge_button,
-        *find_cycle_button, *top_sort_button, *min_span_tree_button, *comps_button, *min_path_button, *find_clique_button;
+        *find_cycle_button, *top_sort_button, *min_span_tree_button, *comps_button, *min_path_button, *find_cliques_button;
     Fl_Check_Button *directed_check, *weighted_check, *multiple_edges_check;
     Fl_Box* graph_display;
     Fl_PNG_Image* graph_image;
@@ -128,7 +143,6 @@ public:
         remove_edge_button = new Fl_Button(230, 100, 120, 25, "Remove Edge");
 
         find_cycle_button = new Fl_Button(360, 10, 120, 25, "Find Cycle");
-        find_clique_button = new Fl_Button(360, 40, 120, 25, "Find clique");
         min_span_tree_button = new Fl_Button(360, 70, 120, 25, "Span tree");
         comps_button = new Fl_Button(360, 100, 120, 25, "Comps");
         min_path_button = new Fl_Button(360, 100, 120, 25, "Min path");
@@ -137,6 +151,7 @@ public:
         top_sort_result_text_display = new Fl_Text_Display(230, 160, 120, 40);
         top_sort_result_text_buffer = new Fl_Text_Buffer();
         top_sort_result_text_display->buffer(top_sort_result_text_buffer);
+        find_cliques_button = new Fl_Button(360, 130, 120, 25, "Find clique");
 
         directed_check = new Fl_Check_Button(10, 130, 120, 25, "Directed");
         weighted_check = new Fl_Check_Button(10, 160, 120, 25, "Weighted");
@@ -156,7 +171,7 @@ public:
         remove_edge_button->callback(static_remove_edge_cb, this);
 
         find_cycle_button->callback(static_find_cycle_cb, this);
-        find_clique_button->callback(static_find_clique_cb, this);
+        find_cliques_button->callback(static_find_cliques_cb, this);
         min_span_tree_button->callback(static_min_span_tree_cb, this);
         comps_button->callback(static_comps_cb, this);
         min_path_button->callback(static_min_path_cb, this);
@@ -176,7 +191,7 @@ public:
     static void static_remove_edge_cb(Fl_Widget* w, void* v) { ((GraphApp*)v)->remove_edge_cb(); }
 
     static void static_find_cycle_cb(Fl_Widget* w, void* v) { ((GraphApp*)v)->find_cycle_cb(); }
-    static void static_find_clique_cb(Fl_Widget* w, void* v) { ((GraphApp*)v)->find_clique_cb(); }
+    static void static_find_cliques_cb(Fl_Widget* w, void* v) { ((GraphApp*)v)->find_cliques_cb(); }
     static void static_min_span_tree_cb(Fl_Widget* w, void* v) { ((GraphApp*)v)->min_span_tree_cb(); }
     static void static_comps_cb(Fl_Widget* w, void* v) { ((GraphApp*)v)->comps_cb(); }
     static void static_min_path_cb(Fl_Widget* w, void* v) { ((GraphApp*)v)->min_path_cb(); }
@@ -252,10 +267,10 @@ public:
         Graphs::create_picture(filename, output_image);
         refresh_picture();
     }
-    void find_clique_cb() {
+    void find_cliques_cb() {
         auto g = get_current_graph();
         auto und = dynamic_cast<Graphs::UndirectedGraph<string>*>(g);
-        auto clique = und->clique_search();
+        auto clique = und->find_max_cliques()[0];
 
         Graphs::VertexColors<string> c;
         for (auto& v : clique) {
@@ -364,8 +379,10 @@ public:
         auto current_graph = get_current_graph();
         directed = directed_check->value();
         if (directed) {
+            find_cliques_button->deactivate();
             top_sort_button->activate();
         } else {
+            find_cliques_button->activate();
             top_sort_button->deactivate();
         }
         current_graph = get_current_graph();

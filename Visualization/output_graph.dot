@@ -1,3 +1,11 @@
 graph G {
+a;
+c;
+e;
+f;
+c -- a [color=black]
+;
+e -- f [color=black]
+;
 
 }

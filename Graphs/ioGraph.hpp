@@ -180,7 +180,7 @@ namespace Graphs {
         for (const Vertex<T>& vertex : graph.get_vertices()) {
             dotFile << vertex.get_object();
             if (vertex_color) {
-                dotFile << "[color=" << (vertex_color->contains(vertex) ? vertex_color->at(vertex) : default_vertex_color) << "]";
+                dotFile << "[color=\"" << (vertex_color->contains(vertex) ? vertex_color->at(vertex) : default_vertex_color) << "\"]";
             }
             dotFile << ";" << std::endl;
         }
